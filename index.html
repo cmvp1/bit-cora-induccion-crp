@@ -389,7 +389,7 @@
       <div>
         <h2>Personal de nuevo ingreso</h2>
         <div class="sub" id="registro-sub">Sin colaboradores registrados todavía.</div>
-        <div id="conn-status" style="margin-top:6px; font:600 12.5px var(--font-body); padding:4px 10px; border-radius:6px; display:inline-block;">Verificando conexión de guardado…</div>
+        <div id="conn-status" style="display:none;"></div>
       </div>
       <div class="btn-row">
         <button class="btn btn-ghost" id="btn-export">⬇ Descargar Excel</button>
@@ -652,33 +652,13 @@
   }
 
   function setConnError(msg){
-    var statusEl = document.getElementById('conn-status');
-    if(statusEl){
-      statusEl.textContent = '🔴 ' + msg;
-      statusEl.style.background = '#B3261E'; statusEl.style.color = '#fff';
-    }
+    console.error(msg);
+    /* aviso visual desactivado a pedido: el error queda solo en la consola */
   }
 
   function showToast(msg, isError){
-    var t = document.getElementById('save-toast');
-    if(!t){
-      t = document.createElement('div');
-      t.id = 'save-toast';
-      t.style.cssText = 'position:fixed;bottom:22px;right:22px;max-width:360px;padding:14px 40px 14px 16px;border-radius:10px;font:600 13px var(--font-body);box-shadow:var(--shadow);z-index:99999;color:#fff;';
-      var closeBtn = document.createElement('span');
-      closeBtn.textContent = '✕';
-      closeBtn.style.cssText = 'position:absolute;top:10px;right:12px;cursor:pointer;font-weight:700;';
-      closeBtn.addEventListener('click', function(){ t.style.display = 'none'; });
-      t.appendChild(closeBtn);
-      var textEl = document.createElement('div');
-      textEl.id = 'save-toast-text';
-      t.insertBefore(textEl, closeBtn);
-      document.body.appendChild(t);
-    }
-    t.style.background = isError ? '#B3261E' : '#0F4035';
-    document.getElementById('save-toast-text').textContent = msg;
-    t.style.display = '';
-    /* se queda fijo hasta que se cierre manualmente, para poder verlo con calma */
+    if(isError){ console.error(msg); } else { console.log(msg); }
+    /* aviso visual (toast) desactivado a pedido: no se muestra nada en pantalla */
   }
   function currentMonthStr(){ return new Date().toISOString().slice(0,7); }
 
