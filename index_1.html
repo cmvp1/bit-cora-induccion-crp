@@ -1,0 +1,2169 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found]){display:none!important}</style></head><body>
+<title>Bitácora de Inducción</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@500;700;800&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+  :root{
+    --brand-deep:#0B3D5C;
+    --brand-bright:#2E86C4;
+    --accent:#1E6FA8;
+    --ink:#152430;
+    --ink-soft:#526375;
+    --surface:#F4F7FA;
+    --card:#FFFFFF;
+    --card-raised:#FFFFFF;
+    --line:#DAE3EC;
+    --line-soft:#EBF1F6;
+    --good:#2F8F5B;
+    --good-bg:#E4F4EA;
+    --warn:#B9782A;
+    --warn-bg:#FBEEDD;
+    --critical:#C1483F;
+    --critical-bg:#FBE7E5;
+    --na:#8B99A6;
+    --na-bg:#E4EAF0;
+    --track:#E1EAF2;
+    --ghost-ink:#0B3D5C;
+    --shadow: 0 1px 2px rgba(10,25,40,.06), 0 8px 24px -12px rgba(10,25,40,.18);
+    --font-display:'Libre Franklin', 'Segoe UI', Arial, sans-serif;
+    --font-body:'Source Sans 3', 'Segoe UI', Arial, sans-serif;
+    --font-mono:'IBM Plex Mono', 'Courier New', monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --brand-deep:#1B5C89;
+      --brand-bright:#63B8EE;
+      --accent:#4FA8D9;
+      --ink:#E6EEF5;
+      --ink-soft:#9DB0C2;
+      --surface:#0A1B26;
+      --card:#0F2A38;
+      --card-raised:#143444;
+      --line:#1E3A4D;
+      --line-soft:#16303F;
+      --good:#4CBB82;
+      --good-bg:#123326;
+      --warn:#E0A94A;
+      --warn-bg:#332411;
+      --critical:#E2665C;
+      --critical-bg:#3A1A17;
+      --na:#6C8098;
+      --na-bg:#182B38;
+      --track:#15303F;
+      --ghost-ink:#63B8EE;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --brand-deep:#1B5C89;
+    --brand-bright:#63B8EE;
+    --accent:#4FA8D9;
+    --ink:#E6EEF5;
+    --ink-soft:#9DB0C2;
+    --surface:#0A1B26;
+    --card:#0F2A38;
+    --card-raised:#143444;
+    --line:#1E3A4D;
+    --line-soft:#16303F;
+    --good:#4CBB82;
+    --good-bg:#123326;
+    --warn:#E0A94A;
+    --warn-bg:#332411;
+    --critical:#E2665C;
+    --critical-bg:#3A1A17;
+    --na:#6C8098;
+    --na-bg:#182B38;
+    --track:#15303F;
+    --ghost-ink:#63B8EE;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--surface);
+    color:var(--ink);
+    font-family:var(--font-body);
+    font-size:15px;
+    line-height:1.5;
+  }
+  ::selection{ background: var(--brand-bright); color:#081a26; }
+
+  .topbar{
+    background:var(--brand-deep);
+    color:#F2FBFB;
+    padding:18px 28px 0;
+  }
+  .topbar-inner{
+    max-width:1180px;
+    margin:0 auto;
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:24px;
+    flex-wrap:wrap;
+  }
+  .brandrow{ display:flex; align-items:center; gap:14px; padding-bottom:16px; }
+  .brandlogo{
+    background:#fff; border-radius:10px; padding:6px;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:var(--shadow); flex:0 0 auto;
+  }
+  .brandlogo img{ display:block; height:40px; width:40px; border-radius:6px; object-fit:cover; }
+  .brandblock{ display:flex; flex-direction:column; gap:2px; }
+  .eyebrow{
+    font:600 11px/1 var(--font-body);
+    letter-spacing:.11em;
+    text-transform:uppercase;
+    color:#A9E2E2;
+  }
+  h1.apptitle{
+    font:800 26px/1.15 var(--font-display);
+    margin:2px 0 0;
+    letter-spacing:-.01em;
+  }
+  .tabs{ display:flex; gap:4px; }
+  .tab{
+    font:600 14px/1 var(--font-body);
+    color:#CBE9E9;
+    background:transparent;
+    border:none;
+    padding:12px 18px;
+    cursor:pointer;
+    border-radius:8px 8px 0 0;
+    position:relative;
+    top:1px;
+  }
+  .tab:hover{ color:#fff; }
+  .tab[aria-selected="true"]{
+    background:var(--surface);
+    color:var(--brand-deep);
+  }
+  .tab:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible{
+    outline:2px solid var(--brand-bright);
+    outline-offset:2px;
+  }
+
+  main{ max-width:1180px; margin:0 auto; padding:28px 28px 80px; }
+  .panel{ display:none; }
+  .panel.active{ display:block; }
+
+  /* ---------- shared bits ---------- */
+  .toolbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+    margin-bottom:18px;
+  }
+  .toolbar h2{
+    font:700 19px/1.2 var(--font-display);
+    margin:0;
+  }
+  .toolbar .sub{ color:var(--ink-soft); font-size:13.5px; margin-top:2px; }
+  .btn{
+    font:600 13.5px/1 var(--font-body);
+    border-radius:8px;
+    padding:10px 16px;
+    border:1px solid transparent;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    white-space:nowrap;
+  }
+  .btn-primary{ background:var(--brand-deep); color:#fff; }
+  .btn-primary:hover{ background:var(--accent); }
+  .btn-ghost{ background:var(--card); color:var(--ghost-ink); border-color:var(--line); }
+  .btn-ghost:hover{ border-color:var(--accent); }
+  .btn-text{ background:transparent; color:var(--ink-soft); border:none; padding:6px 8px; }
+  .btn-text:hover{ color:var(--critical); }
+  .btn-row{ display:flex; gap:10px; flex-wrap:wrap; }
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+  }
+
+  /* ---------- Registro: add form ---------- */
+  .addform{
+    padding:18px 20px;
+    margin-bottom:20px;
+    display:none;
+  }
+  .addform.open{ display:block; }
+  .addform h3{ margin:0 0 14px; font:700 15px var(--font-display); }
+  .formgrid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+  }
+  @media (max-width:820px){ .formgrid{ grid-template-columns:1fr 1fr; } }
+  .field{ display:flex; flex-direction:column; gap:6px; }
+  .field label{ font:600 11.5px var(--font-body); letter-spacing:.03em; color:var(--ink-soft); text-transform:uppercase; }
+  .field input, .field select{
+    font:500 14px var(--font-body);
+    padding:9px 10px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--surface);
+    color:var(--ink);
+  }
+
+  /* ---------- Registro: empty state ---------- */
+  .empty{
+    padding:56px 32px;
+    text-align:center;
+    color:var(--ink-soft);
+  }
+  .empty .mark{
+    width:52px; height:52px; margin:0 auto 16px;
+    border-radius:14px;
+    background:var(--line-soft);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--brand-deep);
+  }
+  .empty h3{ font:700 17px var(--font-display); color:var(--ink); margin:0 0 6px; }
+  .empty p{ margin:0 auto 18px; max-width:420px; font-size:14px; }
+
+  /* ---------- Registro: table ---------- */
+  .tablewrap{ overflow-x:auto; }
+  table.roster{ width:100%; border-collapse:collapse; }
+  @media (min-width:760px){ table.roster{ min-width:820px; } }
+  table.roster thead th{
+    text-align:left;
+    font:600 11px var(--font-body);
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    padding:0 12px 10px;
+    border-bottom:1px solid var(--line);
+  }
+  table.roster tbody td{
+    padding:12px;
+    border-bottom:1px solid var(--line-soft);
+    vertical-align:middle;
+    font-size:14px;
+  }
+  table.roster tbody tr.rowmain{ cursor:pointer; }
+  table.roster tbody tr.rowmain:hover{ background:var(--line-soft); }
+  .nombre-cell{ font:600 14.5px var(--font-body); }
+  .servicio-cell{ color:var(--ink-soft); }
+  .mono{ font-family:var(--font-mono); font-variant-numeric:tabular-nums; font-size:13px; }
+
+  .chip{
+    display:inline-flex; align-items:center; gap:6px;
+    font:600 11.5px var(--font-body);
+    padding:4px 10px;
+    border-radius:999px;
+  }
+  .chip-en_proceso{ background:var(--warn-bg); color:var(--warn); }
+  .chip-completo{ background:var(--good-bg); color:var(--good); }
+  .chip-abandono{ background:var(--critical-bg); color:var(--critical); }
+  .chip-dot{ width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+  .stagepips{ display:flex; gap:4px; }
+  .pip{
+    width:9px; height:9px; border-radius:50%;
+    background:var(--na);
+    opacity:.5;
+  }
+  .pip.si{ background:var(--good); opacity:1; }
+  .pip.no{ background:var(--warn); opacity:1; }
+
+  .chevron{ color:var(--ink-soft); transition:transform .15s ease; }
+  tr.rowmain[aria-expanded="true"] .chevron{ transform:rotate(90deg); }
+  tr.rowmain[aria-expanded="true"]{ background:var(--line-soft); }
+
+  /* ---------- Registro: editor panel (standalone, decoupled from table width) ---------- */
+  .editorbox:empty{ display:none; }
+  .editorbox{ background:var(--line-soft); padding:20px 24px 24px; border-top:1px solid var(--line); border-radius:0 0 14px 14px; }
+  .stagegrid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    margin-bottom:18px;
+  }
+  @media (max-width:820px){ .stagegrid{ grid-template-columns:1fr; } }
+  .stagecard{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:12px 14px;
+  }
+  .stagecard .stagelabel{ font:600 13px var(--font-body); margin-bottom:8px; }
+  .seg{ display:flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; margin-bottom:8px; }
+  .seg button{
+    flex:1; border:none; background:var(--card); color:var(--ink-soft);
+    font:600 11.5px var(--font-body); padding:7px 4px; cursor:pointer;
+    border-right:1px solid var(--line);
+  }
+  .seg button:last-child{ border-right:none; }
+  .seg button.active{ box-shadow:inset 0 0 0 1px currentColor; font-weight:700; }
+  .seg button.active.si{ background:var(--good-bg); color:var(--good); }
+  .seg button.active.no{ background:var(--warn-bg); color:var(--warn); }
+  .seg button.active.na{ background:var(--na-bg); color:var(--na); }
+  .stagecard input[type="date"]{
+    width:100%; font:500 12.5px var(--font-mono); padding:6px 8px;
+    border-radius:6px; border:1px solid var(--line); background:var(--surface); color:var(--ink);
+  }
+  .metarow{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:16px; }
+  .metarow .wide{ grid-column: span 2; }
+  @media (max-width:820px){ .metarow{ grid-template-columns:1fr 1fr; } .metarow .wide{ grid-column: span 2; } }
+  .metarow .field textarea{
+    font:500 13.5px var(--font-body); padding:8px 10px; border-radius:8px;
+    border:1px solid var(--line); background:var(--surface); color:var(--ink);
+    resize:vertical; min-height:38px;
+  }
+  .editorfoot{ display:flex; justify-content:space-between; align-items:center; }
+  .updated-note{ font-size:12px; color:var(--ink-soft); }
+
+  /* ---------- Panel mensual ---------- */
+  .monthbar{ display:flex; align-items:center; gap:12px; margin-bottom:22px; flex-wrap:wrap; }
+  .monthbar input[type="month"]{
+    font:600 14px var(--font-mono); padding:8px 12px; border-radius:8px;
+    border:1px solid var(--line); background:var(--card); color:var(--ink);
+  }
+  .stat-grid{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:14px;
+    margin-bottom:22px;
+  }
+  @media (max-width:980px){ .stat-grid{ grid-template-columns:repeat(3,1fr); } }
+  @media (max-width:560px){ .stat-grid{ grid-template-columns:1fr 1fr; } }
+  .stat{
+    background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:16px 16px 14px;
+    display:flex; flex-direction:column; gap:4px;
+  }
+  .stat .num{ font:700 26px var(--font-mono); letter-spacing:-.02em; }
+  .stat .lbl{ font:600 11.5px var(--font-body); color:var(--ink-soft); letter-spacing:.02em; }
+  .stat.critical .num{ color:var(--critical); }
+  .stat.good .num{ color:var(--good); }
+
+  .chartcard{ padding:20px 22px 8px; margin-bottom:22px; }
+  .chartcard h3{ margin:0 0 4px; font:700 15px var(--font-display); }
+  .chartcard .sub{ color:var(--ink-soft); font-size:13px; margin-bottom:14px; }
+  .barrow{ display:flex; align-items:center; gap:12px; padding:9px 0; }
+  .barrow .barlabel{ width:150px; flex:0 0 150px; font:600 12.5px var(--font-body); color:var(--ink); }
+  .bartrack{ flex:1; height:14px; background:var(--track); border-radius:7px; position:relative; overflow:hidden; }
+  .barfill{ height:100%; border-radius:7px; background:var(--accent); transition:width .4s ease; }
+  .barval{ width:52px; flex:0 0 52px; text-align:right; font:600 12.5px var(--font-mono); color:var(--ink-soft); }
+
+  .monthtable-card{ padding:18px 20px 8px; }
+  .monthtable-card h3{ margin:0 0 12px; font:700 15px var(--font-display); }
+
+  footer.pagefoot{
+    max-width:1180px; margin:0 auto; padding:0 28px 40px;
+    color:var(--ink-soft); font-size:12.5px;
+  }
+
+  /* ---------- Dashboard ---------- */
+  .filterbar{ display:flex; align-items:flex-end; gap:16px; margin-bottom:22px; flex-wrap:wrap; }
+  .filterbar .field{ min-width:170px; }
+  .filterbar input[type="month"], .filterbar select{
+    font:600 14px var(--font-body); padding:8px 12px; border-radius:8px;
+    border:1px solid var(--line); background:var(--card); color:var(--ink);
+  }
+  .basenote{ font-size:12.5px; color:var(--ink-soft); padding-bottom:9px; }
+  .basenote b{ color:var(--ink); font-weight:600; }
+  .progress-note{ font-size:12.5px; color:var(--ink-soft); margin:-10px 0 18px; }
+
+  .kpi-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:22px; }
+  @media (max-width:900px){ .kpi-grid{ grid-template-columns:1fr 1fr; } }
+  @media (max-width:520px){ .kpi-grid{ grid-template-columns:1fr; } }
+  .kpi{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 18px 14px; display:flex; flex-direction:column; gap:6px; }
+  .kpi .top{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+  .kpi .lbl{ font:600 12.5px var(--font-body); color:var(--ink-soft); }
+  .kpi .num{ font:700 30px/1.1 var(--font-mono); letter-spacing:-.02em; color:var(--ink); }
+  .kpi .num small{ font-size:15px; font-weight:600; color:var(--ink-soft); margin-left:2px; }
+  .kpi .meta{ font-size:12.5px; color:var(--ink-soft); display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+  .kpi .delta{ font:600 12px var(--font-mono); color:var(--ink-soft); }
+
+  .status{ display:inline-flex; align-items:center; gap:5px; font:600 11.5px var(--font-body); padding:3px 9px; border-radius:999px; white-space:nowrap; }
+  .status svg{ flex:0 0 auto; }
+  .status.good{ background:var(--good-bg); color:var(--good); }
+  .status.warn{ background:var(--warn-bg); color:var(--warn); }
+  .status.critical{ background:var(--critical-bg); color:var(--critical); }
+  .status.none{ background:var(--na-bg); color:var(--na); }
+
+  .dash-2col{ display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+  @media (max-width:900px){ .dash-2col{ grid-template-columns:1fr; } }
+  .dash-2col .chartcard{ margin-bottom:22px; }
+
+  .bartrack.meta-track{ overflow:visible; }
+  .metamark{ position:absolute; top:-4px; bottom:-4px; width:2px; background:var(--ink); border-radius:1px; opacity:.55; }
+  .barrow[data-tip]{ cursor:default; }
+  .barrow[data-tip]:hover .barfill, .barrow[data-tip]:focus .barfill{ filter:brightness(1.12); }
+  .chart-legend{ display:flex; gap:16px; font-size:12px; color:var(--ink-soft); margin:4px 0 10px; flex-wrap:wrap; }
+  .chart-legend span{ display:inline-flex; align-items:center; gap:6px; }
+  .lg-bar{ width:14px; height:8px; border-radius:4px; background:var(--accent); display:inline-block; }
+  .lg-meta{ width:2px; height:12px; background:var(--ink); opacity:.55; display:inline-block; }
+
+  table.cmp{ width:100%; border-collapse:collapse; font-size:13.5px; }
+  table.cmp th{ text-align:right; font:600 11px var(--font-body); letter-spacing:.05em; text-transform:uppercase; color:var(--ink-soft); padding:0 10px 10px; border-bottom:1px solid var(--line); white-space:nowrap; }
+  table.cmp th:first-child{ text-align:left; }
+  table.cmp td{ padding:10px; border-bottom:1px solid var(--line-soft); text-align:right; font-family:var(--font-mono); font-variant-numeric:tabular-nums; font-size:13px; white-space:nowrap; }
+  table.cmp td:first-child{ text-align:left; font-family:var(--font-body); font-size:13.5px; font-weight:600; white-space:normal; }
+  table.cmp td.muted{ color:var(--ink-soft); }
+  table.cmp th.cur, table.cmp td.cur{ background:var(--line-soft); }
+  .cmp-note{ font-size:12px; color:var(--ink-soft); margin:10px 0 6px; }
+  .cmpcard{ padding:18px 20px 12px; margin-bottom:22px; }
+  .cmpcard h3{ margin:0 0 4px; font:700 15px var(--font-display); }
+  .cmpcard .sub{ color:var(--ink-soft); font-size:13px; margin-bottom:14px; }
+
+  .alertlist{ display:flex; flex-direction:column; }
+  .alertrow{ display:flex; gap:12px; align-items:flex-start; padding:10px 0; border-bottom:1px solid var(--line-soft); }
+  .alertrow:last-child{ border-bottom:none; }
+  .alertrow .who{ flex:0 0 220px; font-weight:600; font-size:14px; }
+  .alertrow .who small{ display:block; font-weight:500; color:var(--ink-soft); font-size:12px; }
+  .alertrow .why{ display:flex; gap:6px; flex-wrap:wrap; }
+  @media (max-width:640px){ .alertrow{ flex-direction:column; gap:6px; } .alertrow .who{ flex:none; } }
+  .ok-note{ font-size:13.5px; color:var(--ink-soft); padding:6px 0 10px; }
+
+  @media (max-width:520px){ .barrow .barlabel{ width:112px; flex-basis:112px; font-size:12px; } .barval{ width:40px; flex-basis:40px; } }
+  .tip{ position:fixed; z-index:50; pointer-events:none; background:var(--ink); color:var(--surface); font:500 12.5px/1.35 var(--font-body); padding:7px 10px; border-radius:8px; max-width:260px; box-shadow:var(--shadow); opacity:0; transition:opacity .1s ease; }
+  .tip.show{ opacity:1; }
+  .btn[disabled]{ opacity:.6; cursor:progress; }
+
+  [hidden]{ display:none !important; }
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+</style>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brandrow">
+      <div class="brandlogo"><img src="data:image/jpeg;base64,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" alt="Clínica Ricardo Palma"></div>
+      <div class="brandblock">
+        <span class="eyebrow">Clínica Ricardo Palma · Coordinación de Inducción</span>
+        <h1 class="apptitle">Bitácora de Inducción</h1>
+      </div>
+    </div>
+    <div class="tabs" role="tablist">
+      <button class="tab" id="tab-btn-registro" role="tab" aria-selected="true">Registro</button>
+      <button class="tab" id="tab-btn-panel" role="tab" aria-selected="false">Dashboard</button>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- ===================== REGISTRO ===================== -->
+  <section class="panel active" id="panel-registro">
+    <div class="toolbar">
+      <div>
+        <h2>Personal de nuevo ingreso</h2>
+        <div class="sub" id="registro-sub">Sin colaboradores registrados todavía.</div>
+        <div id="conn-status" style="display:none;"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="btn-export">⬇ Descargar Excel</button>
+        <button class="btn btn-ghost" id="btn-toggle-import">⬆ Importar Excel</button>
+        <button class="btn btn-primary" id="btn-toggle-add">+ Nuevo colaborador</button>
+      </div>
+    </div>
+
+    <div class="card addform" id="importform">
+      <h3>Importar colaboradores desde Excel</h3>
+      <p style="margin:0 0 14px;color:var(--ink-soft);font-size:13px;max-width:640px;">
+        El archivo debe tener columnas <strong>Nombre</strong> y <strong>DNI</strong>. Si también incluye Categoría y/o Servicio, se usan esos valores por fila; si no, se aplican los valores por defecto de aquí para todo el archivo.
+      </p>
+      <div class="formgrid">
+        <div class="field">
+          <label for="imp-categoria">Categoría por defecto</label>
+          <select id="imp-categoria">
+            <option>Enfermera especialista</option>
+            <option>Enfermera general</option>
+            <option>Interna de enfermería</option>
+            <option>Técnico de enfermería</option>
+            <option>Practicante de enfermería</option>
+          </select>
+        </div>
+        <div class="field" id="imp-servicio-field">
+          <label for="imp-servicio">Servicio por defecto</label>
+          <select id="imp-servicio">
+            <option>Centro Quirúrgico</option>
+            <option>UCI Adultos</option>
+            <option>UCI Pediátrica</option>
+            <option>UCI Neonatal</option>
+            <option>Neonatología</option>
+            <option>Emergencia y Desastres</option>
+            <option>Pediatría</option>
+            <option>General</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="imp-ingreso">Fecha de ingreso</label>
+          <input id="imp-ingreso" type="date">
+        </div>
+        <div class="field">
+          <label for="imp-file">Archivo (.xlsx, .xls o .csv)</label>
+          <input id="imp-file" type="file" accept=".xlsx,.xls,.csv">
+        </div>
+      </div>
+      <div id="imp-preview"></div>
+      <div class="btn-row" style="margin-top:16px;">
+        <button class="btn btn-primary" id="btn-confirm-import" disabled>Importar</button>
+        <button class="btn btn-ghost" id="btn-cancel-import">Cancelar</button>
+      </div>
+    </div>
+
+    <div class="card addform" id="addform">
+      <h3>Registrar nuevo colaborador</h3>
+      <div class="formgrid">
+        <div class="field">
+          <label for="in-nombre">Nombre completo</label>
+          <input id="in-nombre" type="text" placeholder="Apellidos y nombres">
+        </div>
+        <div class="field">
+          <label for="in-dni">DNI</label>
+          <input id="in-dni" type="text" placeholder="8 dígitos" maxlength="15">
+        </div>
+        <div class="field">
+          <label for="in-categoria">Categoría</label>
+          <select id="in-categoria">
+            <option>Enfermera especialista</option>
+            <option>Enfermera general</option>
+            <option>Interna de enfermería</option>
+            <option>Técnico de enfermería</option>
+            <option>Practicante de enfermería</option>
+          </select>
+        </div>
+        <div class="field" id="in-servicio-field">
+          <label for="in-servicio">Especialidad / servicio asignado</label>
+          <select id="in-servicio">
+            <option>Centro Quirúrgico</option>
+            <option>UCI Adultos</option>
+            <option>UCI Pediátrica</option>
+            <option>UCI Neonatal</option>
+            <option>Neonatología</option>
+            <option>Emergencia y Desastres</option>
+            <option>Pediatría</option>
+            <option>General</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="in-ingreso">Fecha de ingreso</label>
+          <input id="in-ingreso" type="date">
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top:16px;">
+        <button class="btn btn-primary" id="btn-save-new">Guardar</button>
+        <button class="btn btn-ghost" id="btn-cancel-new">Cancelar</button>
+      </div>
+    </div>
+
+    <div class="card" id="registro-card">
+      <div class="empty" id="registro-empty">
+        <div class="mark">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 19V5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z" stroke="currentColor" stroke-width="1.6"/><path d="M9 12h6M9 16h6M9 8h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Aún no hay nadie registrado</h3>
+        <p>Agrega a la primera persona que ingresa a inducción para empezar a llevar el seguimiento día a día. Cada colaborador queda como una sola ficha que vas actualizando conforme avanza — no se crea nada nuevo por día.</p>
+        <button class="btn btn-primary" id="btn-empty-add">+ Registrar el primero</button>
+      </div>
+      <div class="tablewrap" id="registro-tablewrap" hidden>
+        <table class="roster">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Nombre</th>
+              <th>DNI</th>
+              <th>Categoría</th>
+              <th>Servicio</th>
+              <th>Ingreso</th>
+              <th>Etapas</th>
+              <th>Estado</th>
+              <th>Actualizado</th>
+            </tr>
+          </thead>
+          <tbody id="roster-body"></tbody>
+        </table>
+      </div>
+      <div class="editorbox" id="editor-panel" hidden></div>
+    </div>
+  </section>
+
+  <!-- ===================== DASHBOARD ===================== -->
+  <section class="panel" id="panel-panel">
+    <div class="toolbar">
+      <div>
+        <h2>Dashboard del programa de inducción</h2>
+        <div class="sub">Indicadores en vivo, comparación mensual y trimestral, y seguimiento pendiente.</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btn-informe">⬇ Informe mensual (Word)</button>
+      </div>
+    </div>
+
+    <div class="filterbar">
+      <div class="field">
+        <label for="in-month">Mes</label>
+        <input type="month" id="in-month">
+      </div>
+      <div class="field">
+        <label for="in-cat-filter">Categoría</label>
+        <select id="in-cat-filter">
+          <option value="">Todas las categorías</option>
+          <option>Enfermera especialista</option>
+          <option>Enfermera general</option>
+          <option>Interna de enfermería</option>
+          <option>Técnico de enfermería</option>
+          <option>Practicante de enfermería</option>
+        </select>
+      </div>
+      <div class="basenote">Línea base: <b>septiembre 2026</b></div>
+    </div>
+    <div class="progress-note" id="progress-note"></div>
+
+    <div class="kpi-grid" id="kpi-grid"></div>
+
+    <div class="dash-2col">
+      <div class="card chartcard">
+        <h3>Cobertura por etapa frente a la meta</h3>
+        <div class="sub">Porcentaje del personal que ya recibió cada etapa, sobre quienes les corresponde y ya fueron evaluados.</div>
+        <div class="chart-legend"><span><i class="lg-bar"></i>Cobertura del mes</span><span><i class="lg-meta"></i>Meta</span></div>
+        <div id="stage-bars"></div>
+      </div>
+      <div class="card chartcard">
+        <h3>Ingresos por categoría</h3>
+        <div class="sub">Personal que ingresó a inducción en el mes seleccionado.</div>
+        <div id="cat-bars"></div>
+      </div>
+    </div>
+
+    <div class="card cmpcard">
+      <h3>Evolución mensual</h3>
+      <div class="sub">Cada indicador mes a mes, desde la línea base hasta el mes seleccionado (últimos 6 meses).</div>
+      <div class="tablewrap"><table class="cmp" id="month-cmp"></table></div>
+    </div>
+
+    <div class="card cmpcard">
+      <h3>Comparación trimestral</h3>
+      <div class="sub">Trimestre del mes seleccionado (acumulado) frente al trimestre anterior.</div>
+      <div class="tablewrap"><table class="cmp" id="q-cmp"></table></div>
+      <div class="cmp-note" id="q-note"></div>
+    </div>
+
+    <div class="card cmpcard">
+      <h3>Seguimiento pendiente</h3>
+      <div class="sub">Colaboradores en proceso que necesitan atención (todas las fechas de ingreso).</div>
+      <div class="alertlist" id="alert-list"></div>
+    </div>
+
+    <div class="card chartcard" id="motivos-card" style="display:none;">
+      <h3>Motivos de abandono</h3>
+      <div class="sub">Desglose de los abandonos registrados en el mes seleccionado.</div>
+      <div id="motivos-bars"></div>
+    </div>
+
+    <div class="card monthtable-card">
+      <h3>Colaboradores ingresados en el mes</h3>
+      <div class="tablewrap">
+        <table class="roster" id="month-table">
+          <thead>
+            <tr><th>Nombre</th><th>Categoría</th><th>Servicio</th><th>Ingreso</th><th>Estado</th></tr>
+          </thead>
+          <tbody id="month-table-body"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="month-empty" style="display:none; padding:32px;">
+        <p>Nadie ingresó en el mes seleccionado.</p>
+      </div>
+    </div>
+    <div class="tip" id="tip" role="tooltip"></div>
+  </section>
+
+</main>
+
+<footer class="pagefoot">Clínica Ricardo Palma · Coordinación de Inducción — datos privados de esta organización.</footer>
+
+<script>
+(function(){
+  "use strict";
+  try{ document.documentElement.setAttribute('lang','es'); }catch(e){}
+
+  var BANK = {
+    d1:  'Día 1 · Inducción general',
+    d2:  'Día 2 · Casiopea (parte I)',
+    d3:  'Día 3 · Casiopea (parte II) y signos de alarma',
+    d4:  'Día 4 · Equipos biomédicos',
+    d5:  'Día 5 · Gestión Humana',
+    uci1:'Día 6 · UCI de adultos (1 de 2)',
+    uci2:'Día 7 · UCI de adultos (2 de 2)'
+  };
+  function bankStage(key){ return { key:key, label:BANK[key] }; }
+  function pisoStages(n){
+    var arr = [];
+    for(var i=1;i<=n;i++){ arr.push({ key:'piso'+i, label:'Piso de hospitalización (día ' + i + ' de ' + n + ')' }); }
+    return arr;
+  }
+  function especialidadStages(n){
+    var arr = [];
+    for(var i=1;i<=n;i++){ arr.push({ key:'esp'+i, label:'Especialidad (día ' + i + ' de ' + n + ')' }); }
+    return arr;
+  }
+  function getStagesForCategory(categoria){
+    switch(categoria){
+      case 'Enfermera especialista':
+        return [bankStage('d1'), bankStage('d2'), bankStage('d3')].concat(especialidadStages(7));
+      case 'Enfermera general':
+        return [bankStage('d1'), bankStage('d2'), bankStage('d3'), bankStage('d4'), bankStage('d5'), bankStage('uci1'), bankStage('uci2')].concat(pisoStages(3));
+      case 'Interna de enfermería':
+        return [bankStage('d1'), bankStage('d2')];
+      case 'Técnico de enfermería':
+        return [bankStage('d1'), bankStage('d5'), bankStage('uci1'), bankStage('uci2')].concat(pisoStages(6));
+      case 'Practicante de enfermería':
+        return [bankStage('d1'), bankStage('d5')].concat(pisoStages(8));
+      default:
+        return [bankStage('d1')];
+    }
+  }
+  function stageApplies(colab, key){
+    return getStagesForCategory(colab.categoria).some(function(s){ return s.key === key; });
+  }
+  var ESTADOS = [
+    { key:'en_proceso', label:'En proceso' },
+    { key:'completo', label:'Completo' },
+    { key:'abandono', label:'Abandono' }
+  ];
+  var MOTIVOS_ABANDONO = [
+    'Dificultad de adaptación al Sistema Casiopea',
+    'Motivos personales o familiares',
+    'Motivos de salud',
+    'No se ajustó al horario / turno',
+    'Mejor oferta laboral / cambio de decisión',
+    'Desempeño insuficiente en la inducción',
+    'Otro (detallado en Observaciones)'
+  ];
+
+  var db = null, downloads = null;
+  var colaboradores = [];   // [{id, ...data()}]
+  var openRowId = null;
+  var addFormOpen = false;
+
+  function emptyEtapas(categoria){
+    var e = {};
+    getStagesForCategory(categoria).forEach(function(s){ e[s.key] = { estado:'na', fecha:null }; });
+    return e;
+  }
+
+  function todayISO(){ var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+
+  var LOCAL_KEY = 'bitacora_induccion_colaboradores_v1';
+  function persistLocal(){
+    try{ localStorage.setItem(LOCAL_KEY, JSON.stringify(colaboradores)); }
+    catch(e){ console.error('No se pudo respaldar en este navegador', e); }
+  }
+  function loadLocal(){
+    try{
+      var raw = localStorage.getItem(LOCAL_KEY);
+      return raw ? JSON.parse(raw) : [];
+    }catch(e){ console.error('No se pudo leer el respaldo de este navegador', e); return []; }
+  }
+
+  function setConnError(msg){
+    console.error(msg);
+    /* aviso visual desactivado a pedido: el error queda solo en la consola */
+  }
+
+  function showToast(msg, isError){
+    if(isError){ console.error(msg); } else { console.log(msg); }
+    /* aviso visual (toast) desactivado a pedido: no se muestra nada en pantalla */
+  }
+  function currentMonthStr(){ return todayISO().slice(0,7); }
+
+  function fmtDate(iso){
+    if(!iso) return '—';
+    var d = new Date(iso + 'T00:00:00');
+    if (isNaN(d.getTime())) return iso;
+    return d.toLocaleDateString('es-PE', { day:'2-digit', month:'short', year:'numeric' });
+  }
+  function relTime(iso){
+    if(!iso) return '—';
+    var then = new Date(iso).getTime();
+    if (isNaN(then)) return '—';
+    var diffMs = Date.now() - then;
+    var days = Math.floor(diffMs / 86400000);
+    if (days <= 0) return 'hoy';
+    if (days === 1) return 'ayer';
+    if (days < 7) return 'hace ' + days + ' días';
+    var weeks = Math.floor(days/7);
+    if (weeks < 5) return 'hace ' + weeks + (weeks===1?' semana':' semanas');
+    var months = Math.floor(days/30);
+    return 'hace ' + months + (months===1?' mes':' meses');
+  }
+
+  function escapeHtml(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  /* ---------------- tabs ---------------- */
+  var tabRegistroBtn = document.getElementById('tab-btn-registro');
+  var tabPanelBtn = document.getElementById('tab-btn-panel');
+  var panelRegistro = document.getElementById('panel-registro');
+  var panelPanel = document.getElementById('panel-panel');
+
+  function selectTab(which){
+    var isRegistro = which === 'registro';
+    tabRegistroBtn.setAttribute('aria-selected', String(isRegistro));
+    tabPanelBtn.setAttribute('aria-selected', String(!isRegistro));
+    panelRegistro.classList.toggle('active', isRegistro);
+    panelPanel.classList.toggle('active', !isRegistro);
+    if(!isRegistro) renderPanelMensual();
+  }
+  tabRegistroBtn.addEventListener('click', function(){ selectTab('registro'); });
+  tabPanelBtn.addEventListener('click', function(){ selectTab('panel'); });
+
+  /* ---------------- add form ---------------- */
+  var addformEl = document.getElementById('addform');
+  function setAddOpen(open){
+    addFormOpen = open;
+    addformEl.classList.toggle('open', open);
+    if(open){ document.getElementById('in-nombre').focus(); }
+  }
+  var SIN_ESPECIALIDAD = ['Enfermera general', 'Interna de enfermería', 'Técnico de enfermería', 'Practicante de enfermería'];
+  function tieneEspecialidad(catValue){ return SIN_ESPECIALIDAD.indexOf(catValue) === -1; }
+  function toggleServicioField(catValue, fieldEl){
+    fieldEl.style.display = tieneEspecialidad(catValue) ? '' : 'none';
+  }
+
+  var inCategoriaSel = document.getElementById('in-categoria');
+  var inServicioField = document.getElementById('in-servicio-field');
+  inCategoriaSel.addEventListener('change', function(){ toggleServicioField(inCategoriaSel.value, inServicioField); });
+  toggleServicioField(inCategoriaSel.value, inServicioField);
+
+  document.getElementById('btn-toggle-add').addEventListener('click', function(){ setImportOpen(false); setAddOpen(!addFormOpen); });
+  document.getElementById('btn-empty-add').addEventListener('click', function(){ setAddOpen(true); });
+  document.getElementById('btn-cancel-new').addEventListener('click', function(){ setAddOpen(false); });
+
+  /* ---------------- import from excel ---------------- */
+  var importformEl = document.getElementById('importform');
+  var impFileInput = document.getElementById('imp-file');
+  var impPreviewEl = document.getElementById('imp-preview');
+  var btnConfirmImport = document.getElementById('btn-confirm-import');
+  var importOpen = false;
+  var parsedImportRows = [];
+
+  document.getElementById('imp-ingreso').value = todayISO();
+
+  var impCategoriaSel = document.getElementById('imp-categoria');
+  var impServicioField = document.getElementById('imp-servicio-field');
+  impCategoriaSel.addEventListener('change', function(){ toggleServicioField(impCategoriaSel.value, impServicioField); });
+  toggleServicioField(impCategoriaSel.value, impServicioField);
+
+  function setImportOpen(open){
+    importOpen = open;
+    importformEl.classList.toggle('open', open);
+    if(!open){
+      impFileInput.value = '';
+      impPreviewEl.innerHTML = '';
+      parsedImportRows = [];
+      btnConfirmImport.disabled = true;
+    }
+  }
+  document.getElementById('btn-toggle-import').addEventListener('click', function(){ setAddOpen(false); setImportOpen(!importOpen); });
+  document.getElementById('btn-cancel-import').addEventListener('click', function(){ setImportOpen(false); });
+
+  function normalizeKey(k){
+    return String(k == null ? '' : k).toLowerCase().trim()
+      .replace(/[áàä]/g,'a').replace(/[éèë]/g,'e').replace(/[íìï]/g,'i').replace(/[óòö]/g,'o').replace(/[úùü]/g,'u')
+      .replace(/[^a-z0-9]/g,'');
+  }
+  function pickField(row, candidates){
+    var keys = Object.keys(row);
+    for(var i=0;i<keys.length;i++){
+      if(candidates.indexOf(normalizeKey(keys[i])) !== -1){
+        var v = row[keys[i]];
+        return v == null ? '' : String(v).trim();
+      }
+    }
+    return '';
+  }
+
+  impFileInput.addEventListener('change', function(e){
+    var file = e.target.files && e.target.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev){
+      try{
+        var data = new Uint8Array(ev.target.result);
+        var wb = XLSX.read(data, { type:'array' });
+        var ws = wb.Sheets[wb.SheetNames[0]];
+        var rawRows = XLSX.utils.sheet_to_json(ws, { defval:'' });
+
+        var nombreKeys = ['nombre','nombres','nombrecompleto','apellidosynombres','colaborador','trabajador'];
+        var dniKeys = ['dni','documento','numerodocumento','nrodocumento','ndni','documentodeidentidad'];
+        var categoriaKeys = ['categoria','cargo'];
+        var servicioKeys = ['servicio','especialidad','area','areaasignada'];
+
+        parsedImportRows = rawRows.map(function(r){
+          return {
+            nombre: pickField(r, nombreKeys),
+            dni: pickField(r, dniKeys),
+            categoria: pickField(r, categoriaKeys),
+            servicio: pickField(r, servicioKeys)
+          };
+        }).filter(function(r){ return r.nombre; });
+
+        if(parsedImportRows.length === 0){
+          impPreviewEl.innerHTML = '<p style="color:var(--critical); font-size:13px; margin-top:14px;">No se encontraron filas con una columna de Nombre reconocible. Revisa los encabezados del archivo (se aceptan variantes de "Nombre" y "DNI").</p>';
+          btnConfirmImport.disabled = true;
+          return;
+        }
+
+        var listHtml = parsedImportRows.slice(0, 12).map(function(r){
+          return '<div style="display:flex; gap:10px; padding:5px 0; font-size:13px; border-bottom:1px solid var(--line-soft);">' +
+            '<span style="flex:1; font-weight:600;">' + escapeHtml(r.nombre) + '</span>' +
+            '<span class="mono" style="color:var(--ink-soft);">' + escapeHtml(r.dni || 'sin DNI') + '</span>' +
+          '</div>';
+        }).join('');
+        var more = parsedImportRows.length > 12 ? '<div style="padding:6px 0; font-size:12.5px; color:var(--ink-soft);">…y ' + (parsedImportRows.length - 12) + ' más.</div>' : '';
+
+        impPreviewEl.innerHTML =
+          '<div style="margin-top:14px; padding:12px 14px; background:var(--line-soft); border-radius:10px;">' +
+            '<div style="font:600 13px var(--font-body); margin-bottom:6px;">Se detectaron ' + parsedImportRows.length + ' colaborador' + (parsedImportRows.length===1?'':'es') + ':</div>' +
+            listHtml + more +
+          '</div>';
+        btnConfirmImport.disabled = false;
+      } catch(err){
+        console.error('Error leyendo el archivo', err);
+        impPreviewEl.innerHTML = '<p style="color:var(--critical); font-size:13px; margin-top:14px;">No se pudo leer el archivo. Verifica que sea un .xlsx, .xls o .csv válido.</p>';
+        btnConfirmImport.disabled = true;
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  });
+
+  btnConfirmImport.addEventListener('click', function(){
+    if(parsedImportRows.length === 0) return;
+    var catDefault = document.getElementById('imp-categoria').value;
+    var servDefault = document.getElementById('imp-servicio').value;
+    var ingreso = document.getElementById('imp-ingreso').value || todayISO();
+    var now = new Date().toISOString();
+
+    parsedImportRows.forEach(function(r){
+      var catResuelta = r.categoria || catDefault;
+      var doc = {
+        nombre: r.nombre,
+        dni: r.dni,
+        categoria: catResuelta,
+        servicio: tieneEspecialidad(catResuelta) ? (r.servicio || servDefault) : '—',
+        fechaIngreso: ingreso,
+        etapas: emptyEtapas(r.categoria || catDefault),
+        estado: 'en_proceso',
+        fechaTermino: null,
+        observaciones: '',
+        createdAt: now,
+        updatedAt: now
+      };
+      var tempDoc = Object.assign({}, doc, { id: 'temp-' + Date.now() + '-' + Math.random().toString(36).slice(2,7) });
+      colaboradores.unshift(tempDoc);
+
+      if(db){
+        db.collection('colaboradores').add(doc).catch(function(err){
+          console.error('No se pudo importar', r.nombre, err);
+          showToast('Se ve en la tabla, pero no se pudo guardar en la nube a ' + r.nombre + ': ' + (err ? ((err.code || '') + (err.code && err.message ? ': ' : '') + (err.message || (err.code ? '' : String(err)))) : 'error desconocido'), true);
+          setConnError('Error al guardar en la nube: ' + (err ? ((err.code || '') + (err.code && err.message ? ': ' : '') + (err.message || (err.code ? '' : String(err)))) : 'error desconocido'));
+        });
+      }
+    });
+    persistLocal();
+    renderRegistro();
+
+    setImportOpen(false);
+  });
+
+  document.getElementById('btn-save-new').addEventListener('click', function(){
+    var nombre = document.getElementById('in-nombre').value.trim();
+    var dni = document.getElementById('in-dni').value.trim();
+    var categoria = document.getElementById('in-categoria').value;
+    var servicio = tieneEspecialidad(categoria) ? document.getElementById('in-servicio').value : '—';
+    var ingreso = document.getElementById('in-ingreso').value || todayISO();
+    if(!nombre){ document.getElementById('in-nombre').focus(); return; }
+    var now = new Date().toISOString();
+    var doc = {
+      nombre: nombre,
+      dni: dni,
+      categoria: categoria,
+      servicio: servicio || '—',
+      fechaIngreso: ingreso,
+      etapas: emptyEtapas(categoria),
+      estado: 'en_proceso',
+      fechaTermino: null,
+      observaciones: '',
+      createdAt: now,
+      updatedAt: now
+    };
+    /* Mostrar de inmediato en la tabla (optimista), sin esperar la confirmación de la nube */
+    var tempDoc = Object.assign({}, doc, { id: 'temp-' + Date.now() + '-' + Math.random().toString(36).slice(2,7) });
+    colaboradores.unshift(tempDoc);
+    persistLocal();
+    renderRegistro();
+
+    if(db){
+      db.collection('colaboradores').add(doc).then(function(){
+        showToast('Guardado en la nube: ' + nombre, false);
+      }).catch(function(err){
+        console.error('No se pudo guardar', err);
+        showToast('Se ve en la tabla, pero no se pudo guardar en la nube (' + nombre + '): ' + (err ? ((err.code || '') + (err.code && err.message ? ': ' : '') + (err.message || (err.code ? '' : String(err)))) : 'error desconocido') + '. Quedó guardado solo en este navegador.', true);
+        setConnError('Error al guardar en la nube: ' + (err ? ((err.code || '') + (err.code && err.message ? ': ' : '') + (err.message || (err.code ? '' : String(err)))) : 'error desconocido'));
+      });
+    }
+    document.getElementById('in-nombre').value = '';
+    document.getElementById('in-dni').value = '';
+    document.getElementById('in-servicio').selectedIndex = 0;
+    document.getElementById('in-ingreso').value = '';
+    setAddOpen(false);
+  });
+
+  /* ---------------- registro rendering ---------------- */
+  var rosterBody = document.getElementById('roster-body');
+  var registroEmpty = document.getElementById('registro-empty');
+  var registroTablewrap = document.getElementById('registro-tablewrap');
+  var registroSub = document.getElementById('registro-sub');
+  var editorPanel = document.getElementById('editor-panel');
+
+  function stageStatus(colab, key){
+    var e = colab.etapas && colab.etapas[key];
+    return (e && e.estado) || 'na';
+  }
+
+  function buildRow(colab){
+    var tr = document.createElement('tr');
+    tr.className = 'rowmain';
+    tr.setAttribute('aria-expanded', String(openRowId === colab.id));
+
+    var pips = getStagesForCategory(colab.categoria).map(function(s){
+      var st = stageStatus(colab, s.key);
+      return '<span class="pip ' + st + '" title="' + s.label + ': ' + (st==='si'?'Sí':st==='no'?'No':'No aplica') + '"></span>';
+    }).join('');
+
+    tr.innerHTML =
+      '<td><svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></td>' +
+      '<td class="nombre-cell">' + escapeHtml(colab.nombre) + '</td>' +
+      '<td class="mono">' + escapeHtml(colab.dni || '—') + '</td>' +
+      '<td>' + escapeHtml(colab.categoria) + '</td>' +
+      '<td class="servicio-cell">' + escapeHtml(colab.servicio) + '</td>' +
+      '<td class="mono">' + fmtDate(colab.fechaIngreso) + '</td>' +
+      '<td><div class="stagepips">' + pips + '</div></td>' +
+      '<td><span class="chip chip-' + colab.estado + '"' + (colab.estado==='abandono' && colab.motivoAbandono ? ' title="' + escapeHtml(colab.motivoAbandono) + '"' : '') + '><span class="chip-dot"></span>' + (ESTADOS.find(function(e2){return e2.key===colab.estado;})||{}).label + '</span></td>' +
+      '<td class="mono" style="color:var(--ink-soft); font-size:12px;">' + relTime(colab.updatedAt) + '</td>';
+
+    tr.addEventListener('click', function(){
+      openRowId = (openRowId === colab.id) ? null : colab.id;
+      renderRegistro();
+      if(openRowId === colab.id){
+        setTimeout(function(){
+          editorPanel.scrollIntoView({ block:'nearest', behavior:'smooth' });
+        }, 30);
+      }
+    });
+
+    return tr;
+  }
+
+  function hideEditorPanel(){
+    editorPanel.hidden = true;
+    editorPanel.innerHTML = '';
+  }
+
+  function renderEditorPanel(colab){
+    editorPanel.hidden = false;
+
+    var stageCards = getStagesForCategory(colab.categoria).map(function(s){
+      var e = (colab.etapas && colab.etapas[s.key]) || { estado:'na', fecha:null };
+      function segBtn(val, label){
+        var active = e.estado === val ? ' active ' + val : '';
+        return '<button type="button" class="' + active.trim() + '" data-stage="' + s.key + '" data-val="' + val + '">' + label + '</button>';
+      }
+      return '<div class="stagecard">' +
+        '<div class="stagelabel">' + s.label + '</div>' +
+        '<div class="seg">' + segBtn('si','Sí') + segBtn('no','No') + segBtn('na','N/A') + '</div>' +
+        '<input type="date" data-stage-date="' + s.key + '" value="' + (e.fecha || '') + '" ' + (e.estado==='si' ? '' : 'disabled') + '>' +
+        '</div>';
+    }).join('');
+
+    editorPanel.innerHTML =
+      '<div class="stagegrid">' + stageCards + '</div>' +
+      '<div class="metarow">' +
+        '<div class="field"><label>Estado</label><select id="ed-estado">' +
+          ESTADOS.map(function(e2){ return '<option value="' + e2.key + '"' + (colab.estado===e2.key?' selected':'') + '>' + e2.label + '</option>'; }).join('') +
+        '</select></div>' +
+        '<div class="field" id="motivo-field" style="' + (colab.estado==='abandono' ? '' : 'display:none;') + '">' +
+          '<label>Motivo de abandono</label><select id="ed-motivo">' +
+            '<option value="">— Seleccionar —</option>' +
+            MOTIVOS_ABANDONO.map(function(m){ return '<option value="' + escapeHtml(m) + '"' + (colab.motivoAbandono===m?' selected':'') + '>' + escapeHtml(m) + '</option>'; }).join('') +
+          '</select>' +
+        '</div>' +
+        '<div class="field"><label>Fecha de ingreso</label><input type="date" id="ed-ingreso" value="' + (colab.fechaIngreso||'') + '"></div>' +
+        '<div class="field"><label>Fecha de término</label><input type="date" id="ed-termino" value="' + (colab.fechaTermino||'') + '"></div>' +
+        '<div class="field wide"><label>Observaciones</label><textarea id="ed-obs" rows="1">' + escapeHtml(colab.observaciones||'') + '</textarea></div>' +
+      '</div>' +
+      '<div class="editorfoot">' +
+        '<span class="updated-note">Última actualización: ' + relTime(colab.updatedAt) + '</span>' +
+        '<div class="btn-row">' +
+          '<button class="btn-text" data-action="delete">Eliminar colaborador</button>' +
+          '<button class="btn btn-primary" data-action="save">Guardar cambios</button>' +
+        '</div>' +
+      '</div>';
+
+    editorPanel.querySelectorAll('.seg button').forEach(function(btn){
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        var card = btn.closest('.stagecard');
+        card.querySelectorAll('.seg button').forEach(function(b){ b.className = ''; });
+        btn.className = 'active ' + btn.dataset.val;
+        var dateInput = card.querySelector('input[type="date"]');
+        if(btn.dataset.val === 'si'){
+          dateInput.disabled = false;
+          if(!dateInput.value) dateInput.value = todayISO();
+        } else {
+          dateInput.disabled = true;
+        }
+      });
+    });
+
+    var edEstadoSel = editorPanel.querySelector('#ed-estado');
+    var motivoField = editorPanel.querySelector('#motivo-field');
+    edEstadoSel.addEventListener('change', function(){
+      motivoField.style.display = (edEstadoSel.value === 'abandono') ? '' : 'none';
+    });
+
+    editorPanel.querySelector('[data-action="save"]').addEventListener('click', function(e){
+      e.stopPropagation();
+      saveColaborador(colab, editorPanel);
+    });
+    editorPanel.querySelector('[data-action="delete"]').addEventListener('click', function(e){
+      e.stopPropagation();
+      var delBtn = editorPanel.querySelector('[data-action="delete"]');
+      if(delBtn.dataset.confirm === '1'){
+        deleteColaborador(colab);
+      } else {
+        delBtn.dataset.confirm = '1';
+        delBtn.textContent = '¿Confirmar eliminación?';
+        delBtn.style.color = 'var(--critical)';
+      }
+    });
+  }
+
+  function saveColaborador(colab, scopeEl){
+    var etapas = {};
+    getStagesForCategory(colab.categoria).forEach(function(s){
+      var card = Array.prototype.find.call(scopeEl.querySelectorAll('.stagecard'), function(c){
+        return c.querySelector('[data-stage="' + s.key + '"]');
+      });
+      var val = 'na';
+      var dateVal = null;
+      if(card){
+        var ab = card.querySelector('.seg button.active');
+        val = ab ? ab.dataset.val : 'na';
+        var di = card.querySelector('input[type="date"]');
+        dateVal = (val === 'si') ? (di.value || todayISO()) : null;
+      }
+      etapas[s.key] = { estado: val, fecha: dateVal };
+    });
+
+    var estadoSel = document.getElementById('ed-estado').value;
+    var motivoSel = document.getElementById('ed-motivo');
+    var motivoVal = (estadoSel === 'abandono' && motivoSel) ? (motivoSel.value || null) : null;
+    var ingresoVal = document.getElementById('ed-ingreso').value;
+    var terminoVal = document.getElementById('ed-termino').value || null;
+    var obsVal = document.getElementById('ed-obs').value;
+
+    var patch = {
+      etapas: etapas,
+      estado: estadoSel,
+      motivoAbandono: motivoVal,
+      fechaIngreso: ingresoVal,
+      fechaTermino: terminoVal,
+      observaciones: obsVal,
+      updatedAt: new Date().toISOString()
+    };
+
+    if(db){
+      db.doc('colaboradores/' + colab.id).update(patch).catch(function(err){
+        console.error('No se pudo actualizar', err);
+        showToast('No se pudo guardar el cambio de ' + (colab.nombre||'') + ': ' + (err ? ((err.code || '') + (err.code && err.message ? ': ' : '') + (err.message || (err.code ? '' : String(err)))) : 'error desconocido'), true);
+        setConnError('Error al guardar en la nube: ' + (err ? ((err.code || '') + (err.code && err.message ? ': ' : '') + (err.message || (err.code ? '' : String(err)))) : 'error desconocido'));
+      });
+    } else {
+      Object.assign(colab, patch, { etapas: Object.assign({}, colab.etapas, etapas) });
+      persistLocal();
+      renderRegistro();
+    }
+  }
+
+  function deleteColaborador(colab){
+    if(db){
+      db.doc('colaboradores/' + colab.id).delete().catch(function(err){
+        console.error(err);
+        showToast('No se pudo eliminar a ' + (colab.nombre||'') + ': ' + (err ? ((err.code || '') + (err.code && err.message ? ': ' : '') + (err.message || (err.code ? '' : String(err)))) : 'error desconocido'), true);
+      });
+    } else {
+      colaboradores = colaboradores.filter(function(c){ return c.id !== colab.id; });
+      persistLocal();
+    }
+    openRowId = null;
+    renderRegistro();
+  }
+
+  function renderRegistro(){
+    var has = colaboradores.length > 0;
+    registroEmpty.style.display = has ? 'none' : '';
+    registroTablewrap.hidden = !has;
+    registroSub.textContent = has
+      ? colaboradores.length + ' colaborador' + (colaboradores.length===1?'':'es') + ' en el registro.'
+      : 'Sin colaboradores registrados todavía.';
+
+    if(!has){
+      rosterBody.innerHTML = '';
+      hideEditorPanel();
+      return;
+    }
+
+    var sorted = colaboradores.slice().sort(function(a,b){
+      return (b.fechaIngreso||'').localeCompare(a.fechaIngreso||'');
+    });
+
+    rosterBody.innerHTML = '';
+    sorted.forEach(function(colab){
+      try{
+        rosterBody.appendChild(buildRow(colab));
+      }catch(e){
+        console.error('No se pudo dibujar la fila de', colab && colab.nombre, e);
+      }
+    });
+
+    var openColab = openRowId ? sorted.find(function(c){ return c.id === openRowId; }) : null;
+    if(openColab){
+      renderEditorPanel(openColab);
+    } else {
+      openRowId = null;
+      hideEditorPanel();
+    }
+  }
+
+  /* ---------------- dashboard ---------------- */
+  var BASE_MONTH = '2026-09';
+  var MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  var MESES_C = ['ene.','feb.','mar.','abr.','may.','jun.','jul.','ago.','sep.','oct.','nov.','dic.'];
+  var ROMANOS = ['I','II','III','IV'];
+  var CAT_LABEL = {
+    'Enfermera especialista':'Enfermero/a especialista',
+    'Enfermera general':'Enfermero/a general',
+    'Interna de enfermería':'Interno/a de enfermería',
+    'Técnico de enfermería':'Técnico/a de enfermería',
+    'Practicante de enfermería':'Practicante de enfermería'
+  };
+  var CATS = Object.keys(CAT_LABEL);
+  function catLabel(c){ return CAT_LABEL[c] || c || '—'; }
+
+  var INDICADORES = [
+    { key:'cobD1',    label:'Cobertura Día 1 · Inducción general', type:'pct', meta:100, higher:true,  metaTxt:'100 %' },
+    { key:'cobCas',   label:'Cobertura Sistema Casiopea',          type:'pct', meta:100, higher:true,  metaTxt:'100 %' },
+    { key:'cobEq',    label:'Cobertura Día 4 · Equipos biomédicos', type:'pct', meta:95,  higher:true,  metaTxt:'≥ 95 %' },
+    { key:'abandono', label:'Tasa de abandono',                    type:'pct', meta:10,  higher:false, metaTxt:'≤ 10 %' },
+    { key:'dias',     label:'Días promedio de inducción',          type:'days',                        metaTxt:'Según itinerario (±1 d)' },
+    { key:'total',    label:'Ingresos del mes',                    type:'count',                       metaTxt:'—' }
+  ];
+  var STATUS_TXT = { good:'Cumple', warn:'En observación', critical:'No cumple', none:'Sin datos' };
+  var STATUS_ICON = {
+    good:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    warn:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 5v9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="12" cy="19" r="1.8" fill="currentColor"/></svg>',
+    critical:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>',
+    none:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 12h12" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>'
+  };
+  function statusChip(st, txt){
+    return '<span class="status ' + st + '">' + STATUS_ICON[st] + (txt || STATUS_TXT[st]) + '</span>';
+  }
+
+  function pct(n, d){ return d > 0 ? Math.round((n/d)*100) : null; }
+  function r1(v){ return Math.round(v*10)/10; }
+  function fmtNum(v){ return String(v).replace('.', ','); }
+  function isoLocal(d){ return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+  function daysBetween(a, b){
+    var da = new Date(a + 'T00:00:00'), db2 = new Date(b + 'T00:00:00');
+    if(isNaN(da.getTime()) || isNaN(db2.getTime())) return null;
+    return Math.round((db2 - da) / 86400000);
+  }
+  /* Días calendario que toma completar n días de programa (lunes a sábado), contando desde el día de ingreso */
+  function expectedDays(c){
+    if(!c.fechaIngreso) return null;
+    var n = getStagesForCategory(c.categoria).length;
+    var d = new Date(c.fechaIngreso + 'T00:00:00');
+    if(isNaN(d.getTime())) return null;
+    var start = d.getTime(), count = 1;
+    while(count < n){ d.setDate(d.getDate()+1); if(d.getDay() !== 0) count++; }
+    return Math.round((d.getTime() - start) / 86400000);
+  }
+
+  function monthName(m, cap){
+    var s = MESES[+m.slice(5,7)-1] + ' ' + m.slice(0,4);
+    return cap ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+  }
+  function monthShort(m){ return MESES_C[+m.slice(5,7)-1] + ' ' + m.slice(2,4); }
+  function shiftMonth(m, k){
+    var y = +m.slice(0,4), mo = +m.slice(5,7) - 1 + k;
+    y += Math.floor(mo / 12); mo = ((mo % 12) + 12) % 12;
+    return y + '-' + String(mo+1).padStart(2,'0');
+  }
+  function quarterOf(m){
+    var y = +m.slice(0,4), mo = +m.slice(5,7), q = Math.floor((mo-1)/3);
+    var months = [0,1,2].map(function(i){ return y + '-' + String(q*3+i+1).padStart(2,'0'); });
+    return { y:y, q:q, months:months, label: ROMANOS[q] + ' trim. ' + y, longLabel: ROMANOS[q] + ' trimestre ' + y };
+  }
+  function prevQuarter(qo){ return quarterOf(shiftMonth(qo.months[0], -1)); }
+  function monthsWithData(months){ return months.filter(function(m){ return m >= BASE_MONTH; }); }
+  function inMonths(list, months){
+    return list.filter(function(c){ return months.indexOf((c.fechaIngreso||'').slice(0,7)) !== -1; });
+  }
+
+  function coverageOf(list, key){
+    var done = 0, den = 0, pend = 0, applicable = 0;
+    list.forEach(function(c){
+      if(!stageApplies(c, key)) return;
+      applicable++;
+      var st = stageStatus(c, key);
+      if(st === 'si'){ done++; den++; }
+      else if(st === 'no'){ den++; }
+      else if(c.estado === 'completo'){ den++; }
+      else { pend++; }
+    });
+    return { pct: pct(done, den), done:done, den:den, pend:pend, applicable:applicable };
+  }
+
+  function computeMetrics(list){
+    var total = list.length;
+    var abandonos = list.filter(function(c){ return c.estado === 'abandono'; });
+    var completos = list.filter(function(c){ return c.estado === 'completo'; });
+    var conFecha = completos.filter(function(c){ return c.fechaTermino && c.fechaIngreso && daysBetween(c.fechaIngreso, c.fechaTermino) !== null; });
+    var dias = null, desvio = null;
+    if(conFecha.length){
+      var sumD = 0, sumDev = 0;
+      conFecha.forEach(function(c){
+        var real = Math.max(0, daysBetween(c.fechaIngreso, c.fechaTermino));
+        sumD += real;
+        sumDev += real - (expectedDays(c) || real);
+      });
+      dias = r1(sumD / conFecha.length);
+      desvio = r1(sumDev / conFecha.length);
+    }
+    var byCat = {};
+    CATS.forEach(function(k){ byCat[k] = { total:0, proceso:0, completo:0, abandono:0 }; });
+    list.forEach(function(c){
+      if(!byCat[c.categoria]) byCat[c.categoria] = { total:0, proceso:0, completo:0, abandono:0 };
+      var b = byCat[c.categoria];
+      b.total++;
+      if(c.estado === 'completo') b.completo++;
+      else if(c.estado === 'abandono') b.abandono++;
+      else b.proceso++;
+    });
+    var motivos = {};
+    abandonos.forEach(function(c){ var k = c.motivoAbandono || 'Sin especificar'; motivos[k] = (motivos[k]||0) + 1; });
+    var cov = { d1: coverageOf(list,'d1'), cas: coverageOf(list,'d2'), eq: coverageOf(list,'d4') };
+    return {
+      total: total,
+      abandonos: abandonos.length,
+      completos: completos.length,
+      proceso: total - abandonos.length - completos.length,
+      abandono: pct(abandonos.length, total),
+      cobD1: cov.d1.pct, cobCas: cov.cas.pct, cobEq: cov.eq.pct,
+      cov: cov, dias: dias, desvio: desvio, conFecha: conFecha.length,
+      byCat: byCat, motivos: motivos
+    };
+  }
+
+  function statusOf(ind, m){
+    if(!m || ind.type === 'count') return null;
+    if(ind.type === 'days'){
+      if(m.desvio === null) return 'none';
+      return m.desvio <= 1 ? 'good' : (m.desvio <= 3 ? 'warn' : 'critical');
+    }
+    var v = m[ind.key];
+    if(m.total === 0 || v === null || v === undefined) return 'none';
+    if(ind.higher) return v >= ind.meta ? 'good' : (v >= ind.meta - 10 ? 'warn' : 'critical');
+    return v <= ind.meta ? 'good' : (v <= ind.meta + 5 ? 'warn' : 'critical');
+  }
+  function valOf(ind, m){
+    if(!m) return null;
+    if(ind.type === 'count') return m.total;
+    if(ind.type === 'days') return m.dias;
+    if(m.total === 0) return null;
+    return m[ind.key];
+  }
+  function fmtVal(ind, v){
+    if(v === null || v === undefined) return '—';
+    if(ind.type === 'pct') return v + ' %';
+    if(ind.type === 'days') return fmtNum(v) + ' d';
+    return String(v);
+  }
+  function fmtDelta(ind, cur, prev){
+    if(cur === null || cur === undefined || prev === null || prev === undefined) return '—';
+    var d = ind.type === 'days' ? r1(cur - prev) : (cur - prev);
+    var sign = d > 0 ? '+' : (d < 0 ? '−' : '±');
+    var abs = fmtNum(Math.abs(d));
+    if(ind.type === 'pct') return sign + abs + ' pp';
+    if(ind.type === 'days') return sign + abs + ' d';
+    return sign + abs;
+  }
+
+  /* ----- estado del filtro ----- */
+  var monthInput = document.getElementById('in-month');
+  var catFilter = document.getElementById('in-cat-filter');
+  monthInput.value = currentMonthStr();
+  monthInput.addEventListener('change', renderPanelMensual);
+  catFilter.addEventListener('change', renderPanelMensual);
+
+  function filteredList(){
+    var cat = catFilter.value;
+    return cat ? colaboradores.filter(function(c){ return c.categoria === cat; }) : colaboradores;
+  }
+
+  function alertsFor(c){
+    var reasons = [];
+    var today = todayISO();
+    var stages = getStagesForCategory(c.categoria);
+    var marked = stages.filter(function(s){ return stageStatus(c, s.key) === 'si'; }).length;
+    var noList = stages.filter(function(s){ return stageStatus(c, s.key) === 'no'; });
+    var elapsed = c.fechaIngreso ? daysBetween(c.fechaIngreso, today) : null;
+    var exp = expectedDays(c);
+    if(c.estado === 'en_proceso'){
+      if(noList.length){
+        reasons.push({ lvl:'critical', t:'Etapa no cumplida: ' + noList[0].label + (noList.length > 1 ? ' y ' + (noList.length-1) + ' más' : '') });
+      }
+      if(marked === 0 && elapsed !== null && elapsed >= 1){
+        reasons.push({ lvl:'warn', t:'Sin etapas registradas' });
+      } else if(marked < stages.length && exp !== null && elapsed !== null && elapsed > exp + 2){
+        reasons.push({ lvl:'critical', t:'Superó el plazo del itinerario (lleva ' + elapsed + ' días; plazo ' + exp + ')' });
+      }
+      if(marked === stages.length){
+        reasons.push({ lvl:'warn', t:'Todas las etapas cumplidas: cambiar estado a Completo' });
+      }
+      var upd = c.updatedAt ? daysBetween(isoLocal(new Date(c.updatedAt)), today) : null;
+      if(upd !== null && upd >= 3 && marked < stages.length){
+        reasons.push({ lvl:'none', t:'Sin actualizar hace ' + upd + ' días' });
+      }
+    }
+    if(c.estado === 'completo' && !c.fechaTermino){
+      reasons.push({ lvl:'warn', t:'Falta la fecha de término' });
+    }
+    return reasons;
+  }
+
+  function barRow(label, val, widthPct, display, tip, metaPct){
+    return '<div class="barrow" tabindex="0" data-tip="' + escapeHtml(tip) + '">' +
+      '<div class="barlabel">' + escapeHtml(label) + '</div>' +
+      '<div class="bartrack' + (metaPct !== undefined ? ' meta-track' : '') + '">' +
+        '<div class="barfill" style="width:' + widthPct + '%"></div>' +
+        (metaPct !== undefined ? '<div class="metamark" style="left:calc(' + metaPct + '% - 1px)"></div>' : '') +
+      '</div>' +
+      '<div class="barval">' + display + '</div>' +
+    '</div>';
+  }
+
+  function renderPanelMensual(){
+    var month = monthInput.value || currentMonthStr();
+    var base = filteredList();
+    var inMonth = inMonths(base, [month]);
+    var m = computeMetrics(inMonth);
+    var prevM = shiftMonth(month, -1);
+    var hasPrev = prevM >= BASE_MONTH;
+    var mp = hasPrev ? computeMetrics(inMonths(base, [prevM])) : null;
+
+    /* nota de avance */
+    var note = document.getElementById('progress-note');
+    var nowMonth = currentMonthStr();
+    if(month === nowMonth){
+      note.textContent = 'Mes en curso: los indicadores se actualizan en vivo conforme registras las etapas.';
+    } else if(month < BASE_MONTH){
+      note.textContent = 'Mes anterior a la línea base del programa.';
+    } else {
+      note.textContent = '';
+    }
+
+    /* KPIs */
+    document.getElementById('kpi-grid').innerHTML = INDICADORES.map(function(ind){
+      var v = valOf(ind, m);
+      var st = statusOf(ind, m);
+      var num;
+      if(v === null || v === undefined) num = '—';
+      else if(ind.type === 'pct') num = v + '<small>%</small>';
+      else if(ind.type === 'days') num = fmtNum(v) + '<small>d</small>';
+      else num = String(v);
+      var deltaTxt = hasPrev ? fmtDelta(ind, v, valOf(ind, mp)) + ' vs. ' + MESES_C[+prevM.slice(5,7)-1] : 'Mes base';
+      var metaLine;
+      if(ind.type === 'days'){
+        metaLine = 'Meta: ' + ind.metaTxt + (m.desvio !== null ? ' · desvío ' + (m.desvio > 0 ? '+' : '') + fmtNum(m.desvio) + ' d' : '');
+      } else if(ind.type === 'count'){
+        metaLine = m.proceso + ' en proceso · ' + m.completos + ' completos';
+      } else {
+        metaLine = 'Meta: ' + ind.metaTxt;
+      }
+      return '<div class="kpi">' +
+        '<div class="top"><div class="lbl">' + ind.label + '</div>' + (st ? statusChip(st) : '') + '</div>' +
+        '<div class="num">' + num + '</div>' +
+        '<div class="meta"><span>' + metaLine + '</span><span class="delta">' + deltaTxt + '</span></div>' +
+      '</div>';
+    }).join('');
+
+    /* barras de cobertura con meta */
+    var covRows = [
+      { label:'Día 1 · Inducción general', c:m.cov.d1, meta:100 },
+      { label:'Sistema Casiopea', c:m.cov.cas, meta:100 },
+      { label:'Día 4 · Equipos biomédicos', c:m.cov.eq, meta:95 }
+    ];
+    document.getElementById('stage-bars').innerHTML = covRows.map(function(r){
+      var v = r.c.pct;
+      var tip = r.label + ': ' + (v === null ? 'sin personal evaluado aún' : r.c.done + ' de ' + r.c.den + ' evaluados (' + v + ' %)') +
+        (r.c.pend ? ' · ' + r.c.pend + ' pendiente' + (r.c.pend===1?'':'s') : '') + ' · Meta ' + r.meta + ' %';
+      return barRow(r.label, v, v === null ? 0 : v, v === null ? '—' : v + '%', tip, r.meta);
+    }).join('');
+
+    /* barras por categoría */
+    var cats = catFilter.value ? [catFilter.value] : CATS;
+    var maxCat = Math.max.apply(null, cats.map(function(k){ return (m.byCat[k]||{}).total || 0; }).concat([1]));
+    document.getElementById('cat-bars').innerHTML = cats.map(function(k){
+      var b = m.byCat[k] || { total:0, proceso:0, completo:0, abandono:0 };
+      var tip = catLabel(k) + ': ' + b.total + ' ingreso' + (b.total===1?'':'s') + ' · ' + b.proceso + ' en proceso · ' + b.completo + ' completos · ' + b.abandono + ' abandonos';
+      return barRow(catLabel(k), b.total, Math.round((b.total/maxCat)*100), String(b.total), tip);
+    }).join('');
+
+    /* evolución mensual */
+    var months = [];
+    for(var i = 5; i >= 0; i--){ var mm = shiftMonth(month, -i); if(mm >= BASE_MONTH) months.push(mm); }
+    if(months.length === 0) months = [month];
+    var mMetrics = months.map(function(mm){ return computeMetrics(inMonths(base, [mm])); });
+    document.getElementById('month-cmp').innerHTML =
+      '<thead><tr><th>Indicador</th><th>Meta</th>' + months.map(function(mm){ return '<th' + (mm===month?' class="cur"':'') + '>' + monthShort(mm) + '</th>'; }).join('') + '</tr></thead>' +
+      '<tbody>' + INDICADORES.map(function(ind){
+        return '<tr><td>' + ind.label + '</td><td class="muted">' + ind.metaTxt + '</td>' +
+          mMetrics.map(function(mx, idx){ return '<td' + (months[idx]===month?' class="cur"':'') + '>' + fmtVal(ind, valOf(ind, mx)) + '</td>'; }).join('') + '</tr>';
+      }).join('') + '</tbody>';
+
+    /* comparación trimestral */
+    var qCur = quarterOf(month), qPrev = prevQuarter(qCur);
+    var qCurMonths = monthsWithData(qCur.months.filter(function(mm){ return mm <= month; }));
+    var qPrevMonths = monthsWithData(qPrev.months);
+    var mqCur = qCurMonths.length ? computeMetrics(inMonths(base, qCurMonths)) : null;
+    var mqPrev = qPrevMonths.length ? computeMetrics(inMonths(base, qPrevMonths)) : null;
+    document.getElementById('q-cmp').innerHTML =
+      '<thead><tr><th>Indicador</th><th>Meta</th><th>' + qPrev.label + '</th><th class="cur">' + qCur.label + '</th><th>Variación</th></tr></thead>' +
+      '<tbody>' + INDICADORES.map(function(ind){
+        var lbl = ind.key === 'total' ? 'Ingresos del trimestre' : ind.label;
+        var a = valOf(ind, mqPrev), b = valOf(ind, mqCur);
+        return '<tr><td>' + lbl + '</td><td class="muted">' + ind.metaTxt + '</td><td>' + fmtVal(ind, a) + '</td><td class="cur">' + fmtVal(ind, b) + '</td><td>' + fmtDelta(ind, b, a) + '</td></tr>';
+      }).join('') + '</tbody>';
+    var qNotes = [];
+    if(!mqPrev) qNotes.push('El ' + qPrev.longLabel + ' es anterior a la línea base del programa.');
+    if(qCurMonths.length && qCurMonths.length < 3){
+      qNotes.push('El ' + qCur.longLabel + ' considera ' + qCurMonths.map(function(mm){ return MESES[+mm.slice(5,7)-1]; }).join(' y ') +
+        (qCur.months[0] < BASE_MONTH ? ' (inicio del registro del programa).' : ' (trimestre en curso).'));
+    }
+    document.getElementById('q-note').textContent = qNotes.join(' ');
+
+    /* seguimiento pendiente */
+    var alertItems = base.map(function(c){ return { c:c, r:alertsFor(c) }; }).filter(function(x){ return x.r.length; })
+      .sort(function(a,b){ return (a.c.fechaIngreso||'').localeCompare(b.c.fechaIngreso||''); });
+    var alertEl = document.getElementById('alert-list');
+    if(!alertItems.length){
+      alertEl.innerHTML = '<div class="ok-note">' + statusChip('good', 'Al día') + '&nbsp; No hay colaboradores con seguimiento pendiente.</div>';
+    } else {
+      alertEl.innerHTML = alertItems.map(function(x){
+        return '<div class="alertrow" role="button" tabindex="0" data-open="' + escapeHtml(x.c.id) + '" style="cursor:pointer;">' +
+          '<div class="who">' + escapeHtml(x.c.nombre) + '<small>' + escapeHtml(catLabel(x.c.categoria)) + ' · ingreso ' + fmtDate(x.c.fechaIngreso) + '</small></div>' +
+          '<div class="why">' + x.r.map(function(r){ return statusChip(r.lvl, escapeHtml(r.t)); }).join('') + '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    /* motivos de abandono */
+    var motivosCard = document.getElementById('motivos-card');
+    var motivosKeys = Object.keys(m.motivos);
+    if(!motivosKeys.length){
+      motivosCard.style.display = 'none';
+    } else {
+      motivosCard.style.display = '';
+      var maxCount = Math.max.apply(null, motivosKeys.map(function(k){ return m.motivos[k]; }));
+      document.getElementById('motivos-bars').innerHTML = motivosKeys.sort(function(a,b){ return m.motivos[b]-m.motivos[a]; }).map(function(k){
+        var n = m.motivos[k];
+        return barRow(k, n, Math.round((n/maxCount)*100), String(n), k + ': ' + n + ' abandono' + (n===1?'':'s'));
+      }).join('');
+    }
+
+    /* tabla del mes */
+    var tbody = document.getElementById('month-table-body');
+    var monthEmpty = document.getElementById('month-empty');
+    var monthTable = document.getElementById('month-table');
+    if(inMonth.length === 0){
+      monthTable.style.display = 'none';
+      monthEmpty.style.display = '';
+    } else {
+      monthTable.style.display = '';
+      monthEmpty.style.display = 'none';
+      tbody.innerHTML = inMonth.slice()
+        .sort(function(a,b){ return (a.fechaIngreso||'').localeCompare(b.fechaIngreso||''); })
+        .map(function(c){
+          var estLbl = (ESTADOS.find(function(e){return e.key===c.estado;})||{}).label || c.estado;
+          return '<tr>' +
+            '<td class="nombre-cell">' + escapeHtml(c.nombre) + '</td>' +
+            '<td>' + escapeHtml(catLabel(c.categoria)) + '</td>' +
+            '<td class="servicio-cell">' + escapeHtml(c.servicio) + '</td>' +
+            '<td class="mono">' + fmtDate(c.fechaIngreso) + '</td>' +
+            '<td><span class="chip chip-' + c.estado + '"><span class="chip-dot"></span>' + estLbl + '</span></td>' +
+          '</tr>';
+        }).join('');
+    }
+  }
+
+  /* abrir colaborador desde el seguimiento */
+  document.getElementById('alert-list').addEventListener('click', function(e){
+    var row = e.target.closest('[data-open]');
+    if(!row) return;
+    openRowId = row.getAttribute('data-open');
+    selectTab('registro');
+    renderRegistro();
+    setTimeout(function(){ editorPanel.scrollIntoView({ block:'nearest', behavior:'smooth' }); }, 30);
+  });
+  document.getElementById('alert-list').addEventListener('keydown', function(e){
+    if(e.key === 'Enter' || e.key === ' '){ var row = e.target.closest('[data-open]'); if(row){ e.preventDefault(); row.click(); } }
+  });
+
+  /* tooltips */
+  var tipEl = document.getElementById('tip');
+  function showTip(target, x, y){
+    tipEl.textContent = target.getAttribute('data-tip');
+    tipEl.classList.add('show');
+    var w = tipEl.offsetWidth, h = tipEl.offsetHeight;
+    var left = Math.min(window.innerWidth - w - 8, Math.max(8, x + 12));
+    var top = y - h - 12; if(top < 8) top = y + 16;
+    tipEl.style.left = left + 'px'; tipEl.style.top = top + 'px';
+  }
+  function hideTip(){ tipEl.classList.remove('show'); }
+  panelPanel.addEventListener('mousemove', function(e){
+    var t = e.target.closest('[data-tip]');
+    if(t) showTip(t, e.clientX, e.clientY); else hideTip();
+  });
+  panelPanel.addEventListener('mouseleave', hideTip);
+  panelPanel.addEventListener('focusin', function(e){
+    var t = e.target.closest('[data-tip]');
+    if(t){ var r = t.getBoundingClientRect(); showTip(t, r.left + r.width/2, r.top); }
+  });
+  panelPanel.addEventListener('focusout', hideTip);
+
+  /* ---------------- informe mensual (Word) ---------------- */
+  var DOCX = (function(){
+    var W = 9638; /* ancho útil A4 con márgenes de 2 cm, en dxa */
+    function x(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function run(text, o){
+      o = o || {};
+      var rpr = '';
+      if(o.bold) rpr += '<w:b/><w:bCs/>';
+      if(o.italic) rpr += '<w:i/><w:iCs/>';
+      if(o.caps) rpr += '<w:caps/>';
+      if(o.color) rpr += '<w:color w:val="' + o.color + '"/>';
+      if(o.size) rpr += '<w:sz w:val="' + Math.round(o.size*2) + '"/><w:szCs w:val="' + Math.round(o.size*2) + '"/>';
+      return '<w:r>' + (rpr ? '<w:rPr>' + rpr + '</w:rPr>' : '') + '<w:t xml:space="preserve">' + x(text) + '</w:t></w:r>';
+    }
+    function para(content, o){
+      o = o || {};
+      var ppr = '';
+      if(o.keepNext) ppr += '<w:keepNext/>';
+      if(o.pageBreak) ppr += '<w:pageBreakBefore/>';
+      if(o.border) ppr += '<w:pBdr><w:bottom w:val="single" w:sz="' + (o.borderSz||12) + '" w:space="4" w:color="' + o.border + '"/></w:pBdr>';
+      if(o.shade) ppr += '<w:shd w:val="clear" w:color="auto" w:fill="' + o.shade + '"/>';
+      ppr += '<w:spacing w:before="' + (o.before||0) + '" w:after="' + (o.after == null ? 120 : o.after) + '"/>';
+      if(o.indent) ppr += '<w:ind w:left="' + o.indent + '"/>';
+      if(o.align) ppr += '<w:jc w:val="' + o.align + '"/>';
+      var runs = Array.isArray(content) ? content.join('') : (content ? run(content, o) : '');
+      return '<w:p><w:pPr>' + ppr + '</w:pPr>' + runs + '</w:p>';
+    }
+    function cell(content, o){
+      o = o || {};
+      var tcpr = '<w:tcW w:w="' + o.w + '" w:type="dxa"/>';
+      if(o.span) tcpr += '<w:gridSpan w:val="' + o.span + '"/>';
+      if(o.fill) tcpr += '<w:shd w:val="clear" w:color="auto" w:fill="' + o.fill + '"/>';
+      tcpr += '<w:vAlign w:val="center"/>';
+      var inner = o.raw ? o.raw : para([run(content, { bold:o.bold, italic:o.italic, color:o.color, size:o.size || 9.5 })], { after:0, align:o.align });
+      return '<w:tc><w:tcPr>' + tcpr + '</w:tcPr>' + inner + '</w:tc>';
+    }
+    function table(widths, rows, o){
+      o = o || {};
+      var sum = widths.reduce(function(a,b){ return a+b; }, 0);
+      var b = o.noBorders
+        ? '<w:tblBorders><w:top w:val="nil"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/><w:insideH w:val="nil"/><w:insideV w:val="nil"/></w:tblBorders>'
+        : '<w:tblBorders>' + ['top','left','bottom','right','insideH','insideV'].map(function(s){ return '<w:' + s + ' w:val="single" w:sz="4" w:space="0" w:color="C9DADF"/>'; }).join('') + '</w:tblBorders>';
+      var pr = '<w:tblPr><w:tblW w:w="' + sum + '" w:type="dxa"/>' + b + '<w:tblLayout w:type="fixed"/>' +
+        '<w:tblCellMar><w:top w:w="50" w:type="dxa"/><w:left w:w="90" w:type="dxa"/><w:bottom w:w="50" w:type="dxa"/><w:right w:w="90" w:type="dxa"/></w:tblCellMar></w:tblPr>';
+      var grid = '<w:tblGrid>' + widths.map(function(w){ return '<w:gridCol w:w="' + w + '"/>'; }).join('') + '</w:tblGrid>';
+      var body = rows.map(function(r, i){
+        var trpr = '<w:trPr><w:cantSplit/>' + (i === 0 && o.header ? '<w:tblHeader/>' : '') + '</w:trPr>';
+        return '<w:tr>' + trpr + r.join('') + '</w:tr>';
+      }).join('');
+      return '<w:tbl>' + pr + grid + body + '</w:tbl>' + para('', { after: o.after == null ? 160 : o.after });
+    }
+    function image(rid, id, name, cxCm, cyCm){
+      var cx = Math.round(cxCm * 360000), cy = Math.round(cyCm * 360000);
+      return '<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="' + cx + '" cy="' + cy + '"/>' +
+        '<wp:docPr id="' + id + '" name="' + x(name) + '"/><wp:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect="1"/></wp:cNvGraphicFramePr>' +
+        '<a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic>' +
+        '<pic:nvPicPr><pic:cNvPr id="' + id + '" name="' + x(name) + '"/><pic:cNvPicPr/></pic:nvPicPr>' +
+        '<pic:blipFill><a:blip r:embed="' + rid + '"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>' +
+        '<pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="' + cx + '" cy="' + cy + '"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr>' +
+        '</pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>';
+    }
+    function documentXml(body){
+      return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+        '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" ' +
+        'xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" ' +
+        'xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><w:body>' + body +
+        '<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="567" w:footer="567" w:gutter="0"/></w:sectPr>' +
+        '</w:body></w:document>';
+    }
+    var STYLES = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">' +
+      '<w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:eastAsia="Calibri" w:cs="Calibri"/><w:color w:val="1F2D33"/><w:sz w:val="21"/><w:szCs w:val="21"/><w:lang w:val="es-PE"/></w:rPr></w:rPrDefault>' +
+      '<w:pPrDefault><w:pPr><w:spacing w:after="120" w:line="264" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>' +
+      '<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style>' +
+      '</w:styles>';
+    var CT = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+      '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+      '<Default Extension="xml" ContentType="application/xml"/>' +
+      '<Default Extension="png" ContentType="image/png"/>' +
+      '<Default Extension="jpeg" ContentType="image/jpeg"/>' +
+      '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>' +
+      '<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>' +
+      '</Types>';
+    var RELS = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+      '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>' +
+      '</Relationships>';
+    function docRels(images){
+      return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+        '<Relationship Id="rIdStyles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' +
+        images.map(function(im){ return '<Relationship Id="' + im.rid + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/' + im.file + '"/>'; }).join('') +
+        '</Relationships>';
+    }
+    function build(bodyXml, images){
+      var zip = new JSZip();
+      zip.file('[Content_Types].xml', CT);
+      zip.file('_rels/.rels', RELS);
+      zip.file('word/document.xml', documentXml(bodyXml));
+      zip.file('word/styles.xml', STYLES);
+      zip.file('word/_rels/document.xml.rels', docRels(images));
+      images.forEach(function(im){ zip.file('word/media/' + im.file, im.b64, { base64:true }); });
+      return zip.generateAsync({ type:'blob', mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+    }
+    return { W:W, run:run, para:para, cell:cell, table:table, image:image, build:build };
+  })();
+
+  var TEAL_DARK = '005262', TEAL = '00ACAC', TEAL_LIGHT = 'E3F3F4', GREY = '5B6B73';
+  var ST_FILL = { good:'E4F4EA', warn:'FBEEDD', critical:'FBE7E5', none:'EEF2F5' };
+  var ST_INK  = { good:'2F7D52', warn:'9A6220', critical:'B03A32', none:'6E7C87' };
+  var ST_SYM  = { good:'✓ ', warn:'! ', critical:'✕ ', none:'– ' };
+
+  function drawCoverageChart(m){
+    var Wpx = 1400, Hpx = 460;
+    var cv = document.createElement('canvas');
+    cv.width = Wpx; cv.height = Hpx;
+    var g = cv.getContext('2d');
+    g.fillStyle = '#FFFFFF'; g.fillRect(0, 0, Wpx, Hpx);
+    var font = '"Calibri","Segoe UI",Arial,sans-serif';
+    g.fillStyle = '#005262'; g.font = 'bold 30px ' + font; g.textBaseline = 'alphabetic';
+    g.fillText('Cobertura por etapa frente a la meta', 20, 44);
+    var rows = [
+      { label:'Día 1 · Inducción general', c:m.cov.d1, meta:100 },
+      { label:'Sistema Casiopea', c:m.cov.cas, meta:100 },
+      { label:'Día 4 · Equipos biomédicos', c:m.cov.eq, meta:95 }
+    ];
+    var x0 = 400, x1 = 1230, top = 90, rowH = 100, barH = 34;
+    rows.forEach(function(r, i){
+      var y = top + i*rowH;
+      g.fillStyle = '#1F2D33'; g.font = '26px ' + font; g.textBaseline = 'middle';
+      g.fillText(r.label, 20, y + barH/2);
+      g.fillStyle = '#E3EEF1';
+      roundRect(g, x0, y, x1 - x0, barH, 8); g.fill();
+      var v = r.c.pct;
+      if(v !== null){
+        g.fillStyle = '#00ACAC';
+        var w = Math.max(10, (x1 - x0) * v / 100);
+        roundRect(g, x0, y, w, barH, 8); g.fill();
+      }
+      var mx = x0 + (x1 - x0) * r.meta / 100;
+      g.fillStyle = '#005262'; g.fillRect(mx - 2, y - 8, 4, barH + 16);
+      g.fillStyle = '#1F2D33'; g.font = 'bold 28px ' + font;
+      g.fillText(v === null ? 'Sin datos' : v + ' %', x1 + 22, y + barH/2);
+      g.fillStyle = '#5B6B73'; g.font = '20px ' + font;
+      g.fillText(v === null ? 'Aún sin personal evaluado' : r.c.done + ' de ' + r.c.den + ' evaluados' + (r.c.pend ? ' · ' + r.c.pend + ' pendiente' + (r.c.pend===1?'':'s') : '') + ' · meta ' + r.meta + ' %', x0, y + barH + 24);
+    });
+    g.fillStyle = '#00ACAC'; roundRect(g, 20, Hpx - 44, 30, 16, 5); g.fill();
+    g.fillStyle = '#5B6B73'; g.font = '20px ' + font; g.textBaseline = 'middle';
+    g.fillText('Cobertura del mes', 60, Hpx - 36);
+    g.fillStyle = '#005262'; g.fillRect(260, Hpx - 48, 4, 24);
+    g.fillStyle = '#5B6B73'; g.fillText('Meta', 274, Hpx - 36);
+    return { b64: cv.toDataURL('image/png').split(',')[1], w: Wpx, h: Hpx };
+  }
+  function roundRect(g, x, y, w, h, r){
+    r = Math.min(r, h/2, w/2);
+    g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r);
+    g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath();
+  }
+
+  function buildInforme(month){
+    var D = DOCX, P = D.para, R = D.run, C = D.cell, T = D.table;
+    var all = colaboradores;
+    var list = inMonths(all, [month]);
+    var m = computeMetrics(list);
+    var prevM = shiftMonth(month, -1);
+    var hasPrev = prevM >= BASE_MONTH;
+    var mp = hasPrev ? computeMetrics(inMonths(all, [prevM])) : null;
+    var qCur = quarterOf(month), qPrev = prevQuarter(qCur);
+    var qCurMonths = monthsWithData(qCur.months.filter(function(mm){ return mm <= month; }));
+    var qPrevMonths = monthsWithData(qPrev.months);
+    var mqCur = qCurMonths.length ? computeMetrics(inMonths(all, qCurMonths)) : null;
+    var mqPrev = qPrevMonths.length ? computeMetrics(inMonths(all, qPrevMonths)) : null;
+    var today = todayISO();
+    var enCurso = month >= currentMonthStr();
+    var fmtD = function(iso){ return iso ? iso.slice(8,10) + '/' + iso.slice(5,7) + '/' + iso.slice(0,4) : '—'; };
+    var images = [];
+    var body = '';
+
+    /* encabezado */
+    var logoImg = document.querySelector('.brandlogo img');
+    var logoB64 = logoImg && logoImg.src.indexOf('base64,') !== -1 ? logoImg.src.split('base64,')[1] : null;
+    var logoRun = '';
+    if(logoB64){ images.push({ rid:'rIdLogo', file:'logo.jpeg', b64:logoB64 }); logoRun = D.image('rIdLogo', 1, 'Logo', 1.7, 1.7); }
+    body += T([1300, D.W - 1300], [[
+      C('', { w:1300, raw: P([logoRun], { after:0 }) }),
+      C('', { w:D.W - 1300, raw:
+        P([R('CLÍNICA RICARDO PALMA', { bold:true, color:TEAL_DARK, size:14 })], { after:0 }) +
+        P([R('Dirección de Enfermería · Coordinación de Inducción', { color:GREY, size:10.5 })], { after:0 }) })
+    ]], { noBorders:true, after:0 });
+    body += P('', { border:TEAL, borderSz:16, after:240 });
+
+    body += P([R('INFORME MENSUAL DEL PROGRAMA DE INDUCCIÓN', { bold:true, color:TEAL_DARK, size:17 })], { after:40 });
+    body += P([R('Personal de nuevo ingreso de enfermería · ' + monthName(month, true), { color:GREY, size:12 })], { after:220 });
+
+    var datos = [
+      ['Periodo', monthName(month, true)],
+      ['Dirigido a', 'Dirección de Enfermería'],
+      ['Elaborado por', 'Lic. Carmen Marisela Vargas Pérez · Coordinadora de Inducción'],
+      ['Fecha de emisión', fmtD(today)],
+      ['Corte de datos', enCurso ? 'Avance al ' + fmtD(today) + ' (mes en curso)' : 'Mes cerrado']
+    ];
+    body += T([2400, D.W - 2400], datos.map(function(r){
+      return [C(r[0], { w:2400, bold:true, color:TEAL_DARK, fill:TEAL_LIGHT }), C(r[1], { w:D.W - 2400 })];
+    }));
+
+    function h1(t){ return P([R(t, { bold:true, color:TEAL_DARK, size:13 })], { before:120, after:100, keepNext:true, border:'C9DADF', borderSz:6 }); }
+
+    /* 1. resumen */
+    body += h1('1. Resumen del mes');
+    var catPartes = CATS.filter(function(k){ return m.byCat[k] && m.byCat[k].total; }).map(function(k){ return m.byCat[k].total + ' ' + catLabel(k).toLowerCase(); });
+    var resumen = m.total === 0
+      ? 'En ' + monthName(month) + ' no se registraron ingresos al programa de inducción.'
+      : 'En ' + monthName(month) + ' ingresaron ' + m.total + ' colaborador' + (m.total===1?'':'es') + ' al programa de inducción' +
+        (catPartes.length ? ' (' + catPartes.join(', ') + ')' : '') + '. ' +
+        (enCurso ? 'Al corte, ' : 'Al cierre del periodo, ') + m.completos + ' completó' + (m.completos===1?'':'aron') + ' su itinerario, ' +
+        m.proceso + ' continúa' + (m.proceso===1?'':'n') + ' en proceso y ' + m.abandonos + ' abandonó' + (m.abandonos===1?'':'aron') + ' el programa.';
+    body += P(resumen, { after:140 });
+    var wc = [3638, 1500, 1500, 1500, 1500];
+    var hdr = ['Categoría','Ingresos','En proceso','Completos','Abandonos'].map(function(t, i){ return C(t, { w:wc[i], bold:true, color:'FFFFFF', fill:TEAL_DARK, align:i ? 'center' : 'left' }); });
+    var catRows = CATS.map(function(k){
+      var b = m.byCat[k] || { total:0, proceso:0, completo:0, abandono:0 };
+      return [C(catLabel(k), { w:wc[0] }), C(String(b.total), { w:wc[1], align:'center' }), C(String(b.proceso), { w:wc[2], align:'center' }), C(String(b.completo), { w:wc[3], align:'center' }), C(String(b.abandono), { w:wc[4], align:'center' })];
+    });
+    catRows.push([C('Total', { w:wc[0], bold:true, fill:TEAL_LIGHT }), C(String(m.total), { w:wc[1], bold:true, fill:TEAL_LIGHT, align:'center' }), C(String(m.proceso), { w:wc[2], bold:true, fill:TEAL_LIGHT, align:'center' }), C(String(m.completos), { w:wc[3], bold:true, fill:TEAL_LIGHT, align:'center' }), C(String(m.abandonos), { w:wc[4], bold:true, fill:TEAL_LIGHT, align:'center' })]);
+    body += T(wc, [hdr].concat(catRows), { header:true });
+
+    /* 2. indicadores */
+    body += h1('2. Indicadores del mes');
+    var wi = [3000, 1150, 1450, 1250, 1150, 1638];
+    var ihdr = ['Indicador','Resultado','Meta', hasPrev ? monthShort(prevM) : 'Mes anterior','Variación','Estado'].map(function(t, i){ return C(t, { w:wi[i], bold:true, color:'FFFFFF', fill:TEAL_DARK, align:i ? 'center' : 'left' }); });
+    var irows = INDICADORES.map(function(ind){
+      var v = valOf(ind, m), st = statusOf(ind, m);
+      var pv = hasPrev ? valOf(ind, mp) : null;
+      return [
+        C(ind.label, { w:wi[0] }),
+        C(fmtVal(ind, v), { w:wi[1], bold:true, align:'center' }),
+        C(ind.metaTxt, { w:wi[2], align:'center', color:GREY }),
+        C(hasPrev ? fmtVal(ind, pv) : 'Línea base', { w:wi[3], align:'center', color:GREY, italic:!hasPrev }),
+        C(hasPrev ? fmtDelta(ind, v, pv) : '—', { w:wi[4], align:'center' }),
+        st ? C(ST_SYM[st] + STATUS_TXT[st], { w:wi[5], bold:true, color:ST_INK[st], fill:ST_FILL[st], align:'center' }) : C('—', { w:wi[5], align:'center', color:GREY })
+      ];
+    });
+    body += T(wi, [ihdr].concat(irows), { header:true, after:120 });
+    var chart = drawCoverageChart(m);
+    images.push({ rid:'rIdChart', file:'cobertura.png', b64:chart.b64 });
+    body += P([D.image('rIdChart', 2, 'Cobertura por etapa', 16.5, 16.5 * chart.h / chart.w)], { align:'center', after:80 });
+    body += P([R('Cobertura: personal que recibió la etapa sobre el personal al que le corresponde según su itinerario y que ya fue evaluado. Días promedio: días calendario entre el ingreso y el término, en quienes completaron el programa; la meta compara con la duración de su itinerario (lunes a sábado).', { italic:true, color:GREY, size:8.5 })], { after:160 });
+
+    /* 3. comparación trimestral */
+    body += h1('3. Comparación trimestral');
+    var mCols = qCurMonths;
+    var fixedW = 2800 + 1250;
+    var restW = D.W - fixedW;
+    var nCols = mCols.length + 3;
+    var colW = Math.floor(restW / nCols);
+    var wq = [2800, 1250].concat(mCols.map(function(){ return colW; })).concat([colW, colW, restW - colW*(nCols-1)]);
+    var qhdrTxt = ['Indicador','Meta'].concat(mCols.map(monthShort)).concat([qCur.label, qPrev.label, 'Variación']);
+    var qhdr = qhdrTxt.map(function(t, i){ return C(t, { w:wq[i], bold:true, color:'FFFFFF', fill:TEAL_DARK, align:i ? 'center' : 'left', size:9 }); });
+    var qrows = INDICADORES.map(function(ind){
+      var lbl = ind.key === 'total' ? 'Ingresos' : ind.label;
+      var cells = [C(lbl, { w:wq[0], size:9 }), C(ind.metaTxt, { w:wq[1], align:'center', color:GREY, size:9 })];
+      mCols.forEach(function(mm, i){ cells.push(C(fmtVal(ind, valOf(ind, computeMetrics(inMonths(all, [mm])))), { w:wq[2+i], align:'center', size:9 })); });
+      var a = valOf(ind, mqPrev), b = valOf(ind, mqCur);
+      var k = 2 + mCols.length;
+      cells.push(C(fmtVal(ind, b), { w:wq[k], align:'center', bold:true, fill:TEAL_LIGHT, size:9 }));
+      cells.push(C(mqPrev ? fmtVal(ind, a) : '—', { w:wq[k+1], align:'center', color:GREY, size:9 }));
+      cells.push(C(fmtDelta(ind, b, a), { w:wq[k+2], align:'center', size:9 }));
+      return cells;
+    });
+    body += T(wq, [qhdr].concat(qrows), { header:true, after:80 });
+    var qn = [];
+    if(qCurMonths.length && qCur.months[0] < BASE_MONTH) qn.push('El ' + qCur.longLabel + ' corresponde al inicio del registro sistematizado del programa (' + qCurMonths.map(function(mm){ return MESES[+mm.slice(5,7)-1]; }).join(' y ') + ').');
+    else if(qCurMonths.length < 3) qn.push('Trimestre en curso: acumulado de ' + qCurMonths.map(function(mm){ return MESES[+mm.slice(5,7)-1]; }).join(' y ') + '.');
+    if(!mqPrev) qn.push('La comparación con el trimestre anterior estará disponible a partir del ' + quarterOf(shiftMonth(qCur.months[2], 1)).longLabel + '.');
+    qn.push('Línea base del programa: septiembre 2026.');
+    body += P([R(qn.join(' '), { italic:true, color:GREY, size:8.5 })], { after:160 });
+
+    /* 4. abandonos */
+    body += h1('4. Abandonos');
+    var mk = Object.keys(m.motivos);
+    if(!mk.length){
+      body += P('No se registraron abandonos en el periodo.', { after:160 });
+    } else {
+      var wa = [D.W - 1400, 1400];
+      body += T(wa, [[C('Motivo', { w:wa[0], bold:true, color:'FFFFFF', fill:TEAL_DARK }), C('N.º', { w:wa[1], bold:true, color:'FFFFFF', fill:TEAL_DARK, align:'center' })]]
+        .concat(mk.sort(function(a,b){ return m.motivos[b]-m.motivos[a]; }).map(function(k){ return [C(k, { w:wa[0] }), C(String(m.motivos[k]), { w:wa[1], align:'center' })]; })), { header:true });
+    }
+
+    /* 5. seguimiento */
+    body += h1('5. Seguimiento del personal en inducción');
+    var seg = list.map(function(c){ return { c:c, r:alertsFor(c) }; }).filter(function(x){ return x.r.length; });
+    if(!seg.length){
+      body += P('Todo el personal ingresado en el periodo tiene su seguimiento al día.', { after:160 });
+    } else {
+      body += P(seg.length + ' colaborador' + (seg.length===1?'':'es') + ' del periodo requiere' + (seg.length===1?'':'n') + ' seguimiento al corte:', { after:100 });
+      var ws2 = [3200, 2400, D.W - 5600];
+      body += T(ws2, [[C('Colaborador', { w:ws2[0], bold:true, color:'FFFFFF', fill:TEAL_DARK }), C('Categoría', { w:ws2[1], bold:true, color:'FFFFFF', fill:TEAL_DARK }), C('Observación', { w:ws2[2], bold:true, color:'FFFFFF', fill:TEAL_DARK })]]
+        .concat(seg.map(function(x){ return [C(x.c.nombre, { w:ws2[0] }), C(catLabel(x.c.categoria), { w:ws2[1] }), C(x.r.map(function(r){ return r.t; }).join(' · '), { w:ws2[2] })]; })), { header:true });
+    }
+
+    /* 6. análisis */
+    body += h1('6. Análisis y acciones de mejora');
+    body += P([R('[Escriba aquí su análisis de los resultados del mes.]', { italic:true, color:'8A99A0' })], { after:120 });
+    body += P([R('Acciones de mejora:', { bold:true, color:TEAL_DARK })], { after:60, keepNext:true });
+    body += P([R('•  [Acción de mejora, responsable y plazo]', { italic:true, color:'8A99A0' })], { after:40, indent:280 });
+    body += P([R('•  [Acción de mejora, responsable y plazo]', { italic:true, color:'8A99A0' })], { after:240, indent:280 });
+
+    /* firma */
+    body += P('', { before:600, after:0 });
+    body += P([R('______________________________________', { color:GREY })], { align:'center', after:40, keepNext:true });
+    body += P([R('Lic. Carmen Marisela Vargas Pérez', { bold:true })], { align:'center', after:0, keepNext:true });
+    body += P([R('Coordinadora de Inducción · Clínica Ricardo Palma', { color:GREY, size:10 })], { align:'center', after:0, keepNext:true });
+    body += P([R('CEP 103076 · RNE 036741', { color:GREY, size:10 })], { align:'center', after:0 });
+
+    /* anexo */
+    body += P([R('Anexo. Relación del personal ingresado en el periodo', { bold:true, color:TEAL_DARK, size:13 })], { pageBreak:true, after:120, border:'C9DADF', borderSz:6 });
+    if(!list.length){
+      body += P('Sin ingresos en el periodo.');
+    } else {
+      var wx = [500, 2738, 1900, 1500, 1100, 1000, 900];
+      var xh = ['N.º','Colaborador','Categoría','Servicio','Ingreso','Estado','Etapas'].map(function(t, i){ return C(t, { w:wx[i], bold:true, color:'FFFFFF', fill:TEAL_DARK, align:(i===1||i===2||i===3) ? 'left' : 'center', size:9 }); });
+      var xr = list.slice().sort(function(a,b){ return (a.fechaIngreso||'').localeCompare(b.fechaIngreso||'') || String(a.nombre).localeCompare(String(b.nombre)); }).map(function(c, i){
+        var stg = getStagesForCategory(c.categoria);
+        var done = stg.filter(function(s){ return stageStatus(c, s.key) === 'si'; }).length;
+        var est = (ESTADOS.find(function(e){ return e.key === c.estado; }) || {}).label || c.estado;
+        return [C(String(i+1), { w:wx[0], align:'center', size:9 }), C(c.nombre, { w:wx[1], size:9 }), C(catLabel(c.categoria), { w:wx[2], size:9 }), C(c.servicio || '—', { w:wx[3], size:9 }),
+          C(fmtD(c.fechaIngreso), { w:wx[4], align:'center', size:9 }), C(est, { w:wx[5], align:'center', size:9 }), C(done + '/' + stg.length, { w:wx[6], align:'center', size:9 })];
+      });
+      body += T(wx, [xh].concat(xr), { header:true });
+    }
+
+    return DOCX.build(body, images);
+  }
+
+  var btnInforme = document.getElementById('btn-informe');
+  btnInforme.addEventListener('click', function(){
+    if(typeof JSZip === 'undefined'){ console.error('JSZip no está disponible'); btnInforme.textContent = 'No se pudo generar'; setTimeout(function(){ btnInforme.textContent = '⬇ Informe mensual (Word)'; }, 2500); return; }
+    var month = monthInput.value || currentMonthStr();
+    btnInforme.disabled = true; btnInforme.textContent = 'Generando…';
+    buildInforme(month).then(function(blob){
+      var filename = 'Informe-Induccion-' + month + '.docx';
+      if(downloads){
+        return downloads.save({ filename: filename, data: blob }).catch(function(err){ console.error('Descarga no completada', err); });
+      }
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = filename; document.body.appendChild(a); a.click();
+      setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); }, 1000);
+    }).catch(function(err){
+      console.error('Error generando el informe', err);
+    }).then(function(){
+      btnInforme.disabled = false; btnInforme.textContent = '⬇ Informe mensual (Word)';
+    });
+  });
+
+  /* ---------------- export to Excel ---------------- */
+  var STAGES_EXPORT = ['d1','d2','d3','d4','d5','uci1','uci2'];
+  document.getElementById('btn-export').addEventListener('click', function(){
+    if(colaboradores.length === 0){ return; }
+    var rows = colaboradores.slice().sort(function(a,b){
+      return (a.fechaIngreso||'').localeCompare(b.fechaIngreso||'');
+    }).map(function(c){
+      var row = {
+        'Nombre': c.nombre,
+        'DNI': c.dni || '',
+        'Categoría': c.categoria,
+        'Servicio': c.servicio,
+        'Fecha de ingreso': c.fechaIngreso,
+        'Estado': (ESTADOS.find(function(e){return e.key===c.estado;})||{}).label || c.estado,
+        'Motivo de abandono': c.estado === 'abandono' ? (c.motivoAbandono || 'Sin especificar') : '',
+        'Fecha de término': c.fechaTermino || ''
+      };
+      STAGES_EXPORT.forEach(function(key){
+        var e = (c.etapas && c.etapas[key]) || { estado:'na' };
+        var applies = stageApplies(c, key);
+        row[BANK[key]] = !applies ? 'No corresponde' : (e.estado === 'si' ? 'Sí' : e.estado === 'no' ? 'No' : 'N/A');
+        row[BANK[key] + ' (fecha)'] = (applies && e.fecha) ? e.fecha : '';
+      });
+      var detalle = getStagesForCategory(c.categoria).map(function(s){
+        var e = (c.etapas && c.etapas[s.key]) || { estado:'na', fecha:null };
+        var lbl = e.estado === 'si' ? 'Sí' : e.estado === 'no' ? 'No' : 'N/A';
+        return s.label + ': ' + lbl + (e.fecha ? ' (' + e.fecha + ')' : '');
+      }).join(' | ');
+      row['Detalle completo del itinerario'] = detalle;
+      row['Observaciones'] = c.observaciones || '';
+      row['Última actualización'] = c.updatedAt ? c.updatedAt.slice(0,10) : '';
+      return row;
+    });
+
+    try{
+      var ws = XLSX.utils.json_to_sheet(rows);
+      var wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Registro');
+      var wbout = XLSX.write(wb, { bookType:'xlsx', type:'array' });
+      var blob = new Blob([wbout], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      var filename = 'registro-induccion-' + todayISO() + '.xlsx';
+
+      if(downloads){
+        downloads.save({ filename: filename, data: blob }).catch(function(err){
+          console.error('No se pudo descargar', err);
+        });
+      } else {
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url; a.download = filename; document.body.appendChild(a); a.click();
+        setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); }, 1000);
+      }
+    } catch(err){
+      console.error('Error generando el Excel', err);
+    }
+  });
+
+  /* ---------------- boot ---------------- */
+  function mapSnapshot(snap){
+    return snap.docs.map(function(d){
+      var data = d.data() || {};
+      data.id = d.id;
+      if(!data.etapas) data.etapas = emptyEtapas(data.categoria);
+      return data;
+    });
+  }
+
+  function cargaInicial(){
+    var query = db.collection('colaboradores').orderBy('fechaIngreso', 'desc');
+    query.get().then(function(snap){
+      var mapped;
+      try{
+        mapped = mapSnapshot(snap);
+      }catch(renderErr){
+        console.error('Error preparando los datos cargados', renderErr);
+        setConnError('Los datos se cargaron pero no se pudieron mostrar: ' + (renderErr && renderErr.message || renderErr) + '. Avísame este mensaje exacto.');
+        return;
+      }
+      colaboradores = mapped;
+      try{
+        renderRegistro();
+        if(panelPanel.classList.contains('active')) renderPanelMensual();
+      }catch(renderErr2){
+        console.error('Error mostrando la lista', renderErr2);
+        setConnError('Los datos se cargaron (' + mapped.length + ') pero no se pudieron mostrar: ' + (renderErr2 && renderErr2.message || renderErr2) + '. Avísame este mensaje exacto.');
+      }
+    }).catch(function(err){
+      console.error('Error cargando la lista', err);
+      var detail = err ? ((err.code || '') + (err.code && err.message ? ': ' : '') + (err.message || (err.code ? '' : String(err)))) : 'error desconocido';
+      setConnError('No se pudo cargar la lista guardada: ' + detail + '.');
+      showRetryButton();
+    });
+  }
+
+  function showRetryButton(){
+    var statusEl = document.getElementById('conn-status');
+    if(!statusEl || document.getElementById('btn-retry-load')) return;
+    var btn = document.createElement('button');
+    btn.id = 'btn-retry-load';
+    btn.textContent = '🔄 Reintentar cargar';
+    btn.style.cssText = 'margin-left:10px; background:#fff; color:#B3261E; border:none; border-radius:6px; padding:3px 10px; font:600 12px var(--font-body); cursor:pointer;';
+    btn.addEventListener('click', function(){ btn.remove(); cargaInicial(); });
+    statusEl.parentNode.insertBefore(btn, statusEl.nextSibling);
+  }
+
+  function subscribeColaboradores(){
+    var query = db.collection('colaboradores').orderBy('fechaIngreso', 'desc');
+
+    /* Carga inicial garantizada: no depende de que el listener en vivo llegue a tiempo */
+    cargaInicial();
+
+    /* Actualizaciones en vivo posteriores (si el navegador las soporta) */
+    query.onSnapshot(function(snap){
+      colaboradores = mapSnapshot(snap);
+      renderRegistro();
+      if(panelPanel.classList.contains('active')) renderPanelMensual();
+    }, function(err){
+      console.error('db onSnapshot error', err);
+      setConnError('La actualización en vivo se interrumpió (' + (err && err.code ? err.code : 'error') + '). Recarga la página para ver los últimos cambios.');
+    });
+  }
+
+  async function init(){
+    renderRegistro();
+    renderPanelMensual();
+    if(typeof window.claude !== 'undefined' && window.claude && window.claude.use){
+      try{
+        db = await window.claude.use('db');
+        downloads = await window.claude.use('downloads');
+      }catch(e){ console.error(e); }
+    }
+    var statusEl = document.getElementById('conn-status');
+    if(db){
+      subscribeColaboradores();
+      if(statusEl){
+        statusEl.textContent = '🟢 Conectado — se guarda automáticamente en la nube (visible desde cualquier dispositivo).';
+        statusEl.style.background = '#0F4035'; statusEl.style.color = '#fff';
+      }
+    } else {
+      colaboradores = loadLocal();
+      renderRegistro();
+      if(statusEl){
+        statusEl.textContent = '🟡 Sin conexión a la nube — guardando solo en este navegador (no se verá en otro dispositivo ni computadora).';
+        statusEl.style.background = '#8a6d00'; statusEl.style.color = '#fff';
+      }
+      showToast('Guardando en este navegador (no se pudo conectar el guardado en la nube). Lo registrado aquí queda guardado en esta computadora entre sesiones, pero no se verá en otro dispositivo.', false);
+    }
+  }
+
+  init();
+})();
+</script>
+
+</body></html>
